@@ -2,109 +2,151 @@
 
 **Topics:** classes and constructors, encapsulation, inheritance, polymorphism, composition, abstract classes
 
-## Overview
+## Introduction
 
-In this assignment you will build the core of a lending system for a small library. The library owns books and DVDs, each in one or more copies. Registered members can borrow a copy and return it later, and the library can print its catalog.
+In this assignment you will write the core of a lending system for a small library.
 
-There is no user interface. You write a Python package and a test suite that proves it works.
+The library owns **items**. Right now there are two kinds: books and DVDs. The library may own several copies of each item. People register as **members**, and a member can borrow a copy of an item and return it later. At any time, the library can print its **catalog**: every item it owns and how many copies are available.
 
-## What you need to do
+There is no user interface. You will write Python classes, and tests that show those classes behave correctly.
 
-1. Create the file structure below.
-2. Implement the classes and methods listed under **Required API**, with exactly the names and behavior described.
-3. Write tests that cover every rule marked **Rule** below.
-4. After finishing, complete `README.md` with what you learned and one design decision you made.
+The assignment has five parts. Do them in order, and write the tests for each part before moving to the next one.
 
-## File structure (required)
+The file for each part is already created. Class and method names given in **bold code** are required, because the tests and the examples depend on them. Everything else is up to you.
 
-```
-01-library-system-python/
-├── library/
-│   ├── __init__.py
-│   ├── errors.py      # exception classes
-│   ├── items.py       # LibraryItem, Book, DVD
-│   ├── member.py      # Member
-│   └── library.py     # Library
-├── tests/
-│   ├── test_items.py
-│   └── test_library.py
-├── ASSIGNMENT.md
-└── README.md
-```
+---
 
-## Required API
+## Part 1 — Errors
 
-### `errors.py`
+**File:** `library/errors.py`
 
-Three exception classes, each inheriting from `Exception`:
+Some operations in this system can fail: borrowing an item that has no copies left, returning something the member never borrowed, or using an ID that doesn't exist. Each kind of failure gets its own exception class, so calling code can tell them apart.
 
-- `ItemUnavailableError`: raised when checking out an item with no available copies
-- `InvalidReturnError`: raised when a return is not valid
-- `NotFoundError`: raised when an item or member ID does not exist in the library
+Define three exception classes. Each one inherits from `Exception` and needs no body:
 
-### `items.py`
+- **`ItemUnavailableError`**: there are no available copies of the item.
+- **`InvalidReturnError`**: the return is not allowed.
+- **`NotFoundError`**: no item or member exists with the given ID.
 
-**`LibraryItem`** — an abstract base class (inherit from `abc.ABC`).
+There is nothing to test in this part.
 
-| Member | Description |
-|--------|-------------|
-| `__init__(self, item_id: int, title: str, copies: int)` | All copies start as available. |
-| `item_id`, `title`, `total_copies` | Read-only properties. |
-| `available_copies` | Read-only property. The underlying value is private. |
-| `checkout(self) -> None` | Decreases available copies by one. |
-| `return_copy(self) -> None` | Increases available copies by one. |
-| `describe(self) -> str` | Abstract method. |
+---
 
-- **Rule:** `LibraryItem(...)` cannot be instantiated directly (Python raises `TypeError` for you if `describe` is abstract).
-- **Rule:** `checkout()` raises `ItemUnavailableError` when no copies are available.
-- **Rule:** `return_copy()` raises `InvalidReturnError` when all copies are already available.
-- **Rule:** Code outside the class cannot assign to `available_copies`.
+## Part 2 — Library items
 
-**`Book(LibraryItem)`** adds `author: str`. Constructor: `Book(item_id, title, copies, author)`.
-**`DVD(LibraryItem)`** adds `minutes: int`. Constructor: `DVD(item_id, title, copies, minutes)`.
+**File:** `library/items.py`
 
-Both constructors must call `super().__init__(...)`, and both implement `describe()`. Suggested output:
+This part practices **abstract classes**, **inheritance** and **encapsulation**.
+
+Every item in the library, whatever its kind, has an ID, a title, a total number of copies and a number of copies currently available. Every item can have a copy checked out and returned. The only thing that differs between a book and a DVD is the extra information it carries and how it describes itself.
+
+So you will write one base class that holds everything the items share, and one subclass per kind of item.
+
+### 2a. The base class
+
+Write the class **`LibraryItem`**.
+
+- Its constructor is **`LibraryItem(item_id, title, copies)`**. When an item is created, all its copies are available.
+- It exposes **`item_id`**, **`title`**, **`total_copies`** and **`available_copies`** as read-only properties.
+- **`checkout()`** takes one copy out: the number of available copies goes down by one. If there are no copies available, it raises `ItemUnavailableError`.
+- **`return_copy()`** puts one copy back: the number of available copies goes up by one. If all copies are already in the library, it raises `InvalidReturnError`.
+- **`describe()`** returns a one-line string describing the item.
+
+Two important restrictions:
+
+1. **It must be abstract.** A "library item" with no kind makes no sense, so it should be impossible to create one directly. Make `LibraryItem` inherit from `abc.ABC` and mark `describe()` as an `@abstractmethod`. Python will then refuse to create a `LibraryItem`, and every subclass will be forced to implement `describe()`.
+2. **The copy count must be protected.** Code outside the class may read `available_copies`, but must not be able to change it. The only way to change it is through `checkout()` and `return_copy()`. Store the value in a private attribute and expose it through a `@property` with no setter.
+
+### 2b. The subclasses
+
+Write **`Book`** and **`DVD`**, both inheriting from `LibraryItem`.
+
+- **`Book(item_id, title, copies, author)`** also stores the author.
+- **`DVD(item_id, title, copies, minutes)`** also stores the length in minutes.
+
+Each constructor must call `super().__init__(...)` for the shared fields, then store its own extra field.
+
+Each class implements `describe()` in its own way. For example:
 
 ```
 [Book] Dune by Frank Herbert (2/3 available)
 [DVD] Alien, 117 min (0/1 available)
 ```
 
-### `member.py`
+### Test that:
 
-**`Member`**
+- Creating `LibraryItem(...)` directly raises `TypeError`.
+- A new `Book` has all copies available.
+- `checkout()` lowers the available copies, and `return_copy()` raises them.
+- `checkout()` with no copies left raises `ItemUnavailableError`.
+- `return_copy()` when all copies are in raises `InvalidReturnError`.
+- Assigning to `available_copies` from outside raises an error.
+- `describe()` of a `Book` and of a `DVD` returns the expected text.
 
-| Member | Description |
-|--------|-------------|
-| `__init__(self, member_id: int, name: str)` | |
-| `member_id`, `name` | Read-only properties. |
-| `borrowed_items` | Read-only view of the items the member currently holds (return a tuple, not the internal list). |
+---
 
-### `library.py`
+## Part 3 — Members
 
-**`Library`** holds items and members (composition).
+**File:** `library/member.py`
 
-| Method | Description |
-|--------|-------------|
-| `add_item(self, item: LibraryItem) -> None` | Adds an item to the catalog. |
-| `add_member(self, member: Member) -> None` | Registers a member. |
-| `checkout(self, member_id: int, item_id: int) -> None` | The member borrows one copy of the item. |
-| `return_item(self, member_id: int, item_id: int) -> None` | The member returns a copy they hold. |
-| `print_catalog(self) -> None` | Prints `describe()` of every item, one per line. |
+A member is a person registered with the library. The library needs to know which items each member currently holds.
 
-- **Rule:** `checkout` and `return_item` raise `NotFoundError` for an unknown member or item ID.
-- **Rule:** After a successful `checkout`, the item appears in the member's `borrowed_items` and its `available_copies` is one lower. `return_item` reverses both.
-- **Rule:** `return_item` raises `InvalidReturnError` if the member does not hold that item.
-- **Rule:** `print_catalog` must not check item types (no `isinstance`, no `type()`). It relies on polymorphism only.
+Write the class **`Member`**.
 
-## What you decide yourself
+- Its constructor is **`Member(member_id, name)`**. A new member holds no items.
+- It exposes **`member_id`** and **`name`** as read-only properties.
+- It exposes **`borrowed_items`**: the items the member currently holds. Return a tuple, not your internal list, so that outside code can't add or remove items behind the library's back.
 
-- How attributes are stored privately (`_x` or `__x`), and how `Library` stores items and members internally.
-- How `Member` updates its borrowed items. You may add methods for this.
-- Any additional helper methods or classes, as long as the required API above exists unchanged.
-- The exact wording of `describe()`.
+The library will need a way to add an item to a member and remove it. Add whatever methods you think are right for that. This is your design decision.
+
+The tests for this part are written together with Part 4.
+
+---
+
+## Part 4 — The library
+
+**File:** `library/library.py`
+
+This part practices **composition** and **polymorphism**.
+
+The `Library` class does not inherit from anything. It *contains* the items and the members, and all borrowing goes through it. This is composition: a library *has* items and members, it isn't one.
+
+Write the class **`Library`**. Its constructor takes no arguments. It has these methods:
+
+- **`add_item(item)`** adds a book or a DVD to the library.
+- **`add_member(member)`** registers a member.
+- **`checkout(member_id, item_id)`**: the member borrows one copy of the item. One copy of the item is checked out, and the item is added to the member's borrowed items.
+- **`return_item(member_id, item_id)`**: the member returns the item. The copy goes back to the library, and the item is removed from the member's borrowed items.
+- **`print_catalog()`** prints every item in the library, one per line.
+
+Rules:
+
+- If `member_id` or `item_id` doesn't exist, `checkout` and `return_item` raise `NotFoundError`.
+- If the member doesn't hold the item they are trying to return, `return_item` raises `InvalidReturnError`.
+- `print_catalog()` must **not** check what kind each item is (no `isinstance`, no `type()`). It just calls `describe()` on every item, and each item describes itself correctly. That is polymorphism: the library treats all items the same way, and each one behaves according to its own class.
+
+### Test that:
+
+- After `checkout`, the item is in the member's `borrowed_items` and its available copies went down by one.
+- After `return_item`, both changes are undone.
+- `checkout` and `return_item` with an unknown member or item raise `NotFoundError`.
+- Returning an item the member doesn't hold raises `InvalidReturnError`.
+- `print_catalog()` prints one line per item. Use pytest's `capsys` fixture to capture the printed output.
+
+---
+
+## Part 5 — Wrap up
+
+Complete `README.md` in this folder with two short sections:
+
+- **What I learned**: a few sentences.
+- **A design decision**: one choice you made that wasn't dictated by the assignment, and why. For example, how `Member` updates its borrowed items, or how `Library` stores items.
+
+---
 
 ## Example
+
+When everything is done, this should work:
 
 ```python
 from library.items import Book, DVD
@@ -117,21 +159,24 @@ lib.add_item(DVD(2, "Alien", 1, 117))
 lib.add_member(Member(10, "Dana"))
 
 lib.checkout(10, 2)
-lib.checkout(10, 2)   # raises ItemUnavailableError
 lib.print_catalog()
 # [Book] Dune by Frank Herbert (3/3 available)
 # [DVD] Alien, 117 min (0/1 available)
+
+lib.checkout(10, 2)   # raises ItemUnavailableError
 ```
 
-## Testing and running
+## Running the tests
 
-- Python 3.11+, tests with `pytest`.
-- Run from this folder: `python -m pytest`
-- Every **Rule** above needs at least one test. Use `capsys` to test `print_catalog`.
+From this folder, with the virtual environment active:
 
-## Submission checklist
+```
+python -m pytest
+```
 
-- [ ] File structure matches the one above
-- [ ] Every method in the Required API exists with the given name and signature
-- [ ] Every Rule has a passing test
+## Done when
+
+- [ ] All five parts are complete
+- [ ] Every "Test that" item has a passing test
+- [ ] The example above runs as shown
 - [ ] `README.md` is completed
