@@ -50,13 +50,13 @@ Each project lives in its own folder with a README holding the full spec. Projec
 | # | Project | Language | Covers | Status |
 |---|---------|----------|--------|--------|
 | 10 | Promise Chain | TypeScript | Promises, async/await, error propagation | ⚪ |
-| 11 | asyncio Practice | Python | Event loop, coroutines, tasks | ⚪ |
+| 11 | [Async Site Checker](11-async-site-checker-python/) | Python | Coroutines, tasks, `gather` vs. `TaskGroup`, timeouts and cancellation, concurrency limits, blocking code | ⚪ |
 
 ### Stage 6 — Concurrency ⚪ · after 5
 
 | # | Project | Language | Covers | Status |
 |---|---------|----------|--------|--------|
-| 12 | Race Condition Demo | Python | Shared state, races, locks | ⚪ |
+| 12 | [Concurrent Bank](12-concurrent-bank-python/) | Python | Race conditions, locks, deadlock, producer–consumer, semaphores, GIL, threads vs. processes | ⚪ |
 | 13 | Worker Threads | TypeScript | Parallelism in Node | ⚪ |
 | 14 | Threads + Mutex | C++ | std::thread, mutexes | ⚪ |
 
@@ -64,7 +64,7 @@ Each project lives in its own folder with a README holding the full spec. Projec
 
 | # | Project | Language | Covers | Status |
 |---|---------|----------|--------|--------|
-| 15 | TCP Echo Server/Client | Python | Sockets, TCP | ⚪ |
+| 15 | [Key-Value Server](15-key-value-server-python/) | Python | TCP sockets, framing, protocol design, threaded and asyncio servers, network errors, HTTP | ⚪ |
 | 16 | TCP Echo Server/Client | C++ | Low-level sockets | ⚪ |
 
 ### Stage 8 — Databases ⚪ · after 2
