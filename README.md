@@ -20,7 +20,7 @@ A project is complete only when every requirement in its assignment is backed by
 
 ### 1. Object-Oriented Programming
 
-- **[01 · Library System](01-library-system-python/)** — Python · *in progress*  
+- **[01 · Library System](01-library-system-python/)** — Python · *complete*  
   Classes, encapsulation, inheritance, polymorphism, composition, abstract classes
 - **[02 · Library System](02-library-system-ts/)** — TypeScript  
   Access modifiers, abstract classes vs. interfaces, static members, method overloading
@@ -54,7 +54,7 @@ A project is complete only when every requirement in its assignment is backed by
 
 - **10 · Promise Chain** — TypeScript  
   Promises, async/await, error propagation
-- **[11 · Async Site Checker](11-async-site-checker-python/)** — Python  
+- **[11 · Async Site Checker](11-async-site-checker-python/)** — Python · *in progress*  
   Coroutines, tasks, `gather` vs. `TaskGroup`, timeouts and cancellation, concurrency limits, blocking code
 
 ### 6. Concurrency
