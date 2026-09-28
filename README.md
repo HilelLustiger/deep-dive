@@ -54,7 +54,7 @@ A project is complete only when every requirement in its assignment is backed by
 
 - **10 · Promise Chain** — TypeScript  
   Promises, async/await, error propagation
-- **[11 · Async Site Checker](11-async-site-checker-python/)** — Python · *in progress*  
+- **[11 · Async Site Checker](11-async-site-checker-python/)** — Python · *complete*  
   Coroutines, tasks, `gather` vs. `TaskGroup`, timeouts and cancellation, concurrency limits, blocking code
 
 ### 6. Concurrency

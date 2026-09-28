@@ -61,3 +61,18 @@ async def check_limited(urls: list[str], timeout: float, max_concurrent: int) ->
         async with asyncio.TaskGroup() as tg:
             tasks = [tg.create_task(limited_check_url(session, url, timeout)) for url in urls]
         return [task.result() for task in tasks]
+
+
+async def check_as_completed_limited(urls: list[str], timeout: float, max_concurrent: int) -> AsyncIterator[CheckResult]:
+    semaphore = asyncio.Semaphore(max_concurrent)
+    
+    async def limit_func(url):
+        async with semaphore:
+            task = await check_url(session, url, timeout)
+            return task
+        
+    async with aiohttp.ClientSession() as session:
+        coros = [limit_func(url) for url in urls]
+        for next_done in asyncio.as_completed(coros):
+            res = await next_done
+            yield res
