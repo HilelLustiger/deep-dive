@@ -1,11 +1,8 @@
-"""Part 1: delayed, async_timed, run_one_by_one, run_as_tasks."""
-
-
 import asyncio
 import time
 
 
-async def delayed(value, seconds):
+async def delayed(value, seconds: float):
     await asyncio.sleep(seconds)
     return value
 
@@ -22,7 +19,7 @@ def async_timed(coro):
 
 
 @async_timed
-async def run_one_by_one(seconds_list):
+async def run_one_by_one(seconds_list: list[float]) -> list[float]:
     results = []
     for second in seconds_list:
         res = await delayed(second, second)
@@ -31,7 +28,7 @@ async def run_one_by_one(seconds_list):
 
 
 @async_timed
-async def run_as_tasks(seconds_list):
+async def run_as_tasks(seconds_list: list[float]) -> list[float]:
     tasks = [asyncio.create_task(delayed(second, second)) for second in seconds_list]
     results = [await task for task in tasks]
     return results
