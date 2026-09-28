@@ -1,7 +1,5 @@
 import pytest
-import asyncio
 import aiohttp
-from checker.models import CheckResult
 from checker.fetch import check_url
 
 
