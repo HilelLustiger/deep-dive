@@ -1,6 +1,6 @@
 import pytest
 import time
-from checker.runner import check_sequential, check_with_gather, check_with_taskgroup
+from checker.runner import check_sequential, check_with_gather, check_with_taskgroup, check_as_completed
 
 
 async def test_sequential_takes_the_sum_of_request_times(base_url: str):
@@ -46,3 +46,20 @@ async def test_gather_with_malformed_url_raises_value_error(base_url: str):
     urls = [f"{base_url}/slow/0.5", f"{base_url}/slow/0.2", "ftp://example.com"]
     with pytest.raises(ValueError):
         await check_with_gather(urls, 3)
+
+
+async def test_yields_results_in_completion_order(base_url: str):
+    urls = [f"{base_url}/slow/1", f"{base_url}/ok", f"{base_url}/slow/0.5"]
+    results = []
+    async for res in check_as_completed(urls, 3):
+        results.append(res.url)
+    assert results == [f"{base_url}/ok", f"{base_url}/slow/0.5", f"{base_url}/slow/1"]
+
+
+async def test_as_completed_yields_first_result_immediately(base_url: str):
+    urls = [f"{base_url}/slow/1", f"{base_url}/ok", f"{base_url}/slow/0.5"]
+    start = time.perf_counter()
+    async for res in check_as_completed(urls, 3):
+        break
+    end = time.perf_counter()
+    assert 0 <= end - start < 0.2

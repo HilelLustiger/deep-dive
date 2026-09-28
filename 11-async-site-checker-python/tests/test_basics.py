@@ -6,6 +6,7 @@ from checker.basics import delayed, run_one_by_one, run_as_tasks
 def test_calling_delayed_without_awaiting_returns_coroutine():
     coro = delayed(1, 0)
     assert asyncio.iscoroutine(coro)
+    coro.close()
 
 
 async def test_delayed_returns_value():
