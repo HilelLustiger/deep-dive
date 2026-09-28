@@ -22,3 +22,8 @@ Calling a coroutine function doesn't run anything on its own. To send several HT
 
 - **`gather`** is a single call. `await asyncio.gather(...)` returns the list of results, in the order the coroutines were passed.
 - **`TaskGroup`** is a block. Inside `async with asyncio.TaskGroup() as tg:`, each task is created with `tg.create_task(...)`. Leaving the block waits for all of them. After the block, each task's result is read with `task.result()`.
+
+**Which one to choose** depends on whether the tasks depend on each other:
+
+- **All or nothing → `TaskGroup`.** When the tasks are parts of one operation, a single failure makes the rest worthless. For example, loading a user's profile, orders and shipping address to render one page. It's better to cancel everything right away, leave nothing running in the background, and report the failure.
+- **Keep whatever succeeds → `gather` with `return_exceptions=True`.** When the tasks are independent, partial results are still useful. This site checker is that case: one invalid URL shouldn't cancel the checks of the other 49. Every task finishes, and the results list shows which ones failed and why, next to the results of the ones that succeeded.
