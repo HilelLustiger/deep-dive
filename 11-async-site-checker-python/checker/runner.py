@@ -30,3 +30,34 @@ async def check_as_completed(urls: list[str], timeout: float) -> AsyncIterator[C
         for next_done in asyncio.as_completed(coros):
             res = await next_done
             yield res
+
+
+async def check_with_deadline(urls: list[str], timeout: float, deadline: float) -> tuple[list[CheckResult], list[str]]:
+    async with aiohttp.ClientSession() as session:
+        tasks_to_urls = {asyncio.create_task(check_url(session, url, timeout)): url for url in urls}
+        
+        done, pending = await asyncio.wait(tasks_to_urls, timeout=deadline)
+
+        if pending:
+            for task in pending:
+                task.cancel()
+
+            await asyncio.wait(pending)
+
+        results = [task.result() for task in done]
+        unfinished = [tasks_to_urls[task] for task in pending]
+
+        return (results, unfinished)
+
+
+async def check_limited(urls: list[str], timeout: float, max_concurrent: int) -> list[CheckResult]:
+    semaphore = asyncio.Semaphore(max_concurrent)
+
+    async def limited_check_url(session, url, timeout):
+        async with semaphore:
+            return await check_url(session, url, timeout)
+
+    async with aiohttp.ClientSession() as session:
+        async with asyncio.TaskGroup() as tg:
+            tasks = [tg.create_task(limited_check_url(session, url, timeout)) for url in urls]
+        return [task.result() for task in tasks]

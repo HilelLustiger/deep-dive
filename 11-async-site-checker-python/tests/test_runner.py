@@ -1,6 +1,7 @@
 import pytest
 import time
-from checker.runner import check_sequential, check_with_gather, check_with_taskgroup, check_as_completed
+import asyncio
+from checker.runner import check_sequential, check_with_gather, check_with_taskgroup, check_as_completed, check_with_deadline, check_limited
 
 
 async def test_sequential_takes_the_sum_of_request_times(base_url: str):
@@ -63,3 +64,41 @@ async def test_as_completed_yields_first_result_immediately(base_url: str):
         break
     end = time.perf_counter()
     assert 0 <= end - start < 0.2
+
+
+async def test_deadline_separates_finished_results_from_unfinished_urls(base_url: str):
+    urls = [f"{base_url}/ok", f"{base_url}/slow/0.2", f"{base_url}/slow/3"]
+    results, unfinished = await check_with_deadline(urls, 4, 1)
+    assert set([res.url for res in results]) == set([f"{base_url}/ok", f"{base_url}/slow/0.2"])
+    assert unfinished == [f"{base_url}/slow/3"]
+
+
+async def test_deadline_returns_when_the_deadline_expires(base_url: str):
+    urls = [f"{base_url}/ok", f"{base_url}/slow/0.2", f"{base_url}/slow/3"]
+    start = time.perf_counter()
+    await check_with_deadline(urls, 4, 1)
+    end = time.perf_counter()
+    assert 0 <= end - start < 1.2
+
+
+async def test_deadline_cancels_unfinished_tasks(base_url: str):
+    urls = [f"{base_url}/slow/6"]
+    await check_with_deadline(urls, 5, 0.5)
+    pending = [task for task in asyncio.all_tasks() if task.get_coro().__qualname__ == "check_url"]
+    assert pending == []
+
+
+async def test_limited_runs_in_batches_of_max_concurrent(base_url: str):
+    urls = [f"{base_url}/slow/0.5"] * 4
+    start = time.perf_counter()
+    await check_limited(urls, 5, 2)
+    end = time.perf_counter()
+    assert 1 <= end - start < 1.2
+
+
+async def test_limited_runs_all_at_once_when_limit_allows(base_url: str):
+    urls = [f"{base_url}/slow/0.5"] * 4
+    start = time.perf_counter()
+    await check_limited(urls, 5, 4)
+    end = time.perf_counter()
+    assert 0.5 <= end - start < 0.7
