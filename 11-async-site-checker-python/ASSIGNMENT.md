@@ -26,6 +26,71 @@ Use this server in all tests from Part 2 on. Tests that check timing should allo
 
 ---
 
+## Reading
+
+### Before you start
+
+The goal here is to know the vocabulary and the shape of each problem before you write code, not to know the solution.
+
+1. **[Python docs — A Conceptual Overview of asyncio](https://docs.python.org/3/howto/a-conceptual-overview-of-asyncio.html)**, part 1 "the high-level" only.
+   The mental model: what the event loop is, the difference between a coroutine function, a coroutine and a task, and what `await` actually does. Read this first.
+   *Parts 1 and 3.*
+2. **[Python docs — Coroutines and Tasks](https://docs.python.org/3/library/asyncio-task.html)**
+   The official reference for almost every tool in this assignment. Read the sections as you reach each part:
+   - [Coroutines](https://docs.python.org/3/library/asyncio-task.html#coroutines), [Awaitables](https://docs.python.org/3/library/asyncio-task.html#awaitables), [Creating Tasks](https://docs.python.org/3/library/asyncio-task.html#creating-tasks) (Part 1)
+   - [Task Groups](https://docs.python.org/3/library/asyncio-task.html#task-groups), [Running Tasks Concurrently](https://docs.python.org/3/library/asyncio-task.html#running-tasks-concurrently) (Part 3)
+   - [Timeouts](https://docs.python.org/3/library/asyncio-task.html#timeouts) (Part 2)
+   - [Waiting Primitives](https://docs.python.org/3/library/asyncio-task.html#waiting-primitives) (Parts 4–5)
+   - [Task Cancellation](https://docs.python.org/3/library/asyncio-task.html#task-cancellation) (Part 5)
+   - [Running in Threads](https://docs.python.org/3/library/asyncio-task.html#running-in-threads) (Part 7)
+3. **[Real Python — Python's asyncio: A Hands-On Walkthrough](https://realpython.com/async-io-python/)**
+   Mostly the same basics as the overview above. Read it for `async with`, `async for`, and async generators, which the overview doesn't cover.
+   *Parts 2 and 4.*
+4. **[Python tutorial — Raising and Handling Multiple Unrelated Exceptions](https://docs.python.org/3/tutorial/errors.html#tut-exception-groups)**
+   What an `ExceptionGroup` is and how `except*` catches one type out of it.
+   *Part 3.*
+5. **[aiohttp — Client Quickstart](https://docs.aiohttp.org/en/stable/client_quickstart.html)**
+   `ClientSession`, making a request with `async with`, and reading the response status.
+   *Part 2.*
+6. **[Python docs — asyncio `Semaphore`](https://docs.python.org/3/library/asyncio-sync.html#semaphore)**
+   Short. A counter of free slots, used with `async with`.
+   *Part 6.*
+7. **[Python docs — Developing with asyncio: Running Blocking Code](https://docs.python.org/3/library/asyncio-dev.html#running-blocking-code)** and [Debug Mode](https://docs.python.org/3/library/asyncio-dev.html#debug-mode)
+   Why a blocking call freezes every task, and how debug mode can warn you about slow callbacks.
+   *Part 7.*
+8. **[Python docs — Runners](https://docs.python.org/3/library/asyncio-runner.html)** and the **[argparse tutorial](https://docs.python.org/3/howto/argparse.html)**
+   What `asyncio.run` does (creates the loop, runs the coroutine, cleans up), and how to parse command-line options.
+   *Part 8.*
+9. **[pytest-asyncio — Test discovery modes](https://pytest-asyncio.readthedocs.io/en/latest/concepts.html#test-discovery-modes)**
+   What `asyncio_mode = auto` changes.
+   *Part 0.*
+
+### Going deeper
+
+The source this assignment is based on:
+
+- ***Python Concurrency with asyncio*** by Matthew Fowler, ch. 2 "asyncio basics" and ch. 4 "Concurrent web requests" (not free).
+
+How it works underneath:
+
+- **[Python docs — A Conceptual Overview of asyncio](https://docs.python.org/3/howto/a-conceptual-overview-of-asyncio.html#a-conceptual-overview-part-2-the-nuts-and-bolts)**, part 2 "the nuts and bolts". Futures, how a coroutine really pauses, and a homemade `asyncio.sleep`.
+- **[Brett Cannon — How the heck does async/await work in Python 3.5?](https://snarky.ca/how-the-heck-does-async-await-work-in-python-3-5/)**. The path from generators to coroutines, and how an event loop drives them.
+- **[OSTEP, ch. 33 — Event-based Concurrency](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)**. What an event loop is at the OS level (`select`/`poll`), why it needs no locks, and section 33.5, "A Problem: Blocking System Calls", which is Part 7 in C.
+- **[Python docs — `selectors`](https://docs.python.org/3/library/selectors.html)**. The layer asyncio's event loop is built on. A preview of project 15.
+- **[Python docs — Event Loop](https://docs.python.org/3/library/asyncio-eventloop.html)**. The low-level API that `asyncio.run` hides from you.
+- ***Fluent Python*, 2nd ed.** by Luciano Ramalho, ch. 21 "Asynchronous Programming" (not free).
+
+Design ideas behind the API:
+
+- **[Nathaniel J. Smith — Notes on structured concurrency, or: Go statement considered harmful](https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/)**. The idea `TaskGroup` comes from: why "fire and forget" tasks are the concurrent version of `goto`.
+- **[Nathaniel J. Smith — Timeouts and cancellation for humans](https://vorpus.org/blog/timeouts-and-cancellation-for-humans/)**. Why per-operation timeouts don't compose, and the idea of cancel scopes that `asyncio.timeout` follows.
+
+The specifications:
+
+- **[PEP 492 — Coroutines with async and await syntax](https://peps.python.org/pep-0492/)**, **[PEP 525 — Asynchronous Generators](https://peps.python.org/pep-0525/)** and **[PEP 654 — Exception Groups and except*](https://peps.python.org/pep-0654/)**. The design discussions behind `async`/`await`, async generators and `except*`.
+
+---
+
 ## Part 0 — Project setup
 
 Set up the project in this folder:

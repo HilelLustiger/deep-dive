@@ -25,6 +25,61 @@ Race conditions depend on timing, so a naive test may pass by luck. Two techniqu
 
 ---
 
+## Reading
+
+### Before you start
+
+The goal here is to know the vocabulary and the shape of each problem before you write code, not to know the solution.
+
+1. **[OSTEP, ch. 26 — Concurrency: An Introduction](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)**, sections 26.1–26.6. Language-independent, with examples in C.
+   What a thread is compared to a process: threads share one address space, and each has its own stack. Why the scheduler makes the order of execution unpredictable, and how that turns `counter = counter + 1` into a race condition. Also defines critical section, mutual exclusion and atomicity.
+   *Parts 1–3.*
+2. **[Real Python — An Intro to Threading in Python](https://realpython.com/intro-to-python-threading/)**
+   The same ideas as the chapter above, shown with Python objects: `Thread`, `start()` and `join()`, daemon threads, `ThreadPoolExecutor`, a race condition fixed with `Lock`, deadlock, producer–consumer with `Queue`, and a short tour of `Semaphore`, `Timer` and `Barrier`.
+   *Parts 1–6.*
+3. **[OSTEP, ch. 32 — Common Concurrency Problems](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)**, section 32.3 "Deadlock Bugs" only.
+   The four conditions a deadlock needs (mutual exclusion, hold-and-wait, no preemption, circular wait), and why making every thread take locks in one global order breaks the circular wait.
+   *Part 4.*
+4. **Python docs — `threading`**: [Lock Objects](https://docs.python.org/3/library/threading.html#lock-objects), [Semaphore Objects](https://docs.python.org/3/library/threading.html#semaphore-objects), [Barrier Objects](https://docs.python.org/3/library/threading.html#barrier-objects)
+   The exact API: `acquire(timeout=...)`, what it returns, using a lock with `with`, and how a semaphore counts. Short, and worth having open while you work.
+   *Parts 1, 3, 4 and 6.*
+5. **[Python docs — `queue`, Queue Objects](https://docs.python.org/3/library/queue.html#queue-objects)**
+   What `maxsize` does, when `put` and `get` block, and how `task_done()` and `join()` work together.
+   *Part 5.*
+6. **[Real Python — Speed Up Your Python Program With Concurrency](https://realpython.com/python-concurrency/)**
+   I/O-bound vs. CPU-bound work, what the GIL is, and why threads speed up the first but not the second while multiprocessing speeds up both. It also covers asyncio, which you already know from project 11. Compare it with threads.
+   *Part 7.*
+7. **[Python docs — `concurrent.futures`](https://docs.python.org/3/library/concurrent.futures.html#executor-objects)**: Executor Objects and ProcessPoolExecutor
+   `Executor.map`, and the rules a function must follow to be sent to another process.
+   *Part 7.*
+
+### Going deeper
+
+The sources this assignment is based on:
+
+- **[The Little Book of Semaphores](https://greenteapress.com/wp/semaphores/)** by Allen B. Downey, ch. 1–4 (free PDF). Synchronization as a set of puzzles you solve with one tool, the semaphore. Useful sections: 3.4 Mutex (Part 3), 3.5 Multiplex (Part 6), 3.6 Barrier (how the `Barrier` you use in Part 1 can be built), 4.1 Producer-consumer (Part 5), and 4.4 Dining philosophers, the classic deadlock problem (Part 4).
+- ***Fluent Python*, 2nd ed.** by Luciano Ramalho, ch. 19 "Concurrency Models in Python" and ch. 20 "Concurrent Executors" (not free). The same small program written with threads, processes and asyncio side by side, followed by `concurrent.futures` in depth.
+
+Under the hood:
+
+- **[OSTEP, ch. 4 — The Abstraction: The Process](https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf)**. A refresher on what a process is: its address space, its states, and what the OS keeps track of for it.
+- **[OSTEP, ch. 28 — Locks](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)**. How a lock is actually built. Plain loads and stores aren't enough, so it takes hardware instructions such as test-and-set and compare-and-swap, plus the choice between spinning and sleeping.
+- **[OSTEP, ch. 30 — Condition Variables](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf)**. Building a bounded buffer yourself, which is roughly what `queue.Queue` does internally with `threading.Condition`. Also covers why the check must be in a `while` loop and not an `if`.
+- **[OSTEP, ch. 31 — Semaphores](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf)**. The semaphore as a general primitive that can act as a lock, a signal or a counter. Section 31.7 "Thread Throttling" is exactly Part 6.
+- **[OSTEP, ch. 32 — Common Concurrency Problems](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)**, section 32.2. The non-deadlock bugs, atomicity violations and order violations, which a study of real software found to be the most common concurrency bugs.
+- **[OSTEP, ch. 27 — Thread API](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)**. The same concepts in C with pthreads. A preview of project 14.
+
+Python-specific:
+
+- **[Real Python — Python Thread Safety: Using a Lock and Other Techniques](https://realpython.com/python-thread-lock/)**. The rest of the `threading` toolbox: `RLock`, `Condition`, `Event` and more.
+- **[David Beazley — Understanding the Python GIL](http://www.dabeaz.com/GIL/)** (PyCon 2010, slides and video). How the GIL is actually passed between threads, and why CPU-bound threads can be *slower* than serial code.
+- **[Python docs — `sys.setswitchinterval`](https://docs.python.org/3/library/sys.html#sys.setswitchinterval)**. How often CPython asks a running thread to give up the GIL. This is why races show up at all without a `pause`.
+- **[Python docs — `multiprocessing`, Contexts and start methods](https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods)**. `spawn` vs. `fork`, and why functions have to be pickled. macOS uses `spawn` by default.
+- **[Real Python — Bypassing the GIL for Parallel Processing in Python](https://realpython.com/python-parallel-processing/)**. Other ways around the GIL besides processes, such as C extensions that release it.
+- **[PEP 703 — Making the Global Interpreter Lock Optional](https://peps.python.org/pep-0703/)** and the **[free-threading HOWTO](https://docs.python.org/3/howto/free-threading-python.html)**. Why the GIL exists, what removing it costs, and the state of the free-threaded build.
+
+---
+
 ## Part 0 — Project setup
 
 Set up the project in this folder:

@@ -11,7 +11,7 @@ Each project is a focused assignment built from an established textbook or unive
 
 Every project lives in its own folder with two documents:
 
-- **`ASSIGNMENT.md`**: the task, written before any code, in the style of a university assignment. It states what to build, the required interfaces, and the tests that define "done".
+- **`ASSIGNMENT.md`**: the task, written before any code, in the style of a university assignment. It states what to build, the required interfaces, and the tests that define "done". A **Reading** section lists what to read *before you start*, each source tied to the parts it prepares for, and what to read for *going deeper*.
 - **`README.md`**: the source the assignment is based on, what the project covers, and, once complete, what I learned and one design decision I made along the way.
 
 A project is complete only when every requirement in its assignment is backed by a passing test.

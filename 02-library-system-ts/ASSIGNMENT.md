@@ -16,6 +16,60 @@ Class, interface and method names given in **bold code** are required. Everythin
 
 ---
 
+## Reading
+
+### Before you start
+
+The goal here is to know the vocabulary and the shape of each problem before you write code, not to know the solution.
+
+1. **[TypeScript Handbook — Everyday Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html)**
+   The basics of type annotations: primitives, arrays, union types like `number | null`, and the first look at interfaces. Skip it if TypeScript's syntax already feels familiar.
+   *All parts.*
+2. **[TypeScript Handbook — Classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)**
+   The main reading for this assignment. Fields and `readonly`, constructors, `super` calls, `implements`, overriding methods, member visibility (`public`, `protected`, `private`), static members, and abstract classes.
+   *Parts 3–5.*
+3. **[TypeScript Handbook — Object Types](https://www.typescriptlang.org/docs/handbook/2/objects.html)**
+   Interfaces as named object shapes, [`readonly` properties](https://www.typescriptlang.org/docs/handbook/2/objects.html#readonly-properties), [extending interfaces](https://www.typescriptlang.org/docs/handbook/2/objects.html#extending-types), and [`ReadonlyArray`](https://www.typescriptlang.org/docs/handbook/2/objects.html#the-readonlyarray-type).
+   *Parts 2 and 4.*
+4. **[TypeScript Handbook — Function Overloads](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads)**
+   Overload signatures vs. the implementation signature, and why the implementation isn't visible to callers.
+   *Part 5c.*
+5. **[TypeScript Handbook — Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)**
+   How `typeof` checks let TypeScript know which type you have inside an `if`. This is what the overload implementation needs.
+   *Part 5c.*
+6. **[Refactoring Guru — Singleton](https://refactoring.guru/design-patterns/singleton)**, with its [TypeScript example](https://refactoring.guru/design-patterns/singleton/typescript/example)
+   What the pattern solves, how it's built, and its "Pros and Cons", including why it makes tests harder.
+   *Part 5a.*
+7. **[TypeScript 3.9 release notes — `// @ts-expect-error` comments](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html#-ts-expect-error-comments)**
+   How to assert that a line doesn't compile, and how it differs from `@ts-ignore`.
+   *Compile-error checks.*
+8. **[TSConfig reference — `strict`](https://www.typescriptlang.org/tsconfig/#strict)** and **[Vitest — Getting Started](https://vitest.dev/guide/)**, plus [`toThrow`](https://vitest.dev/api/expect.html#tothrow)
+   What strict mode turns on, and how to write and run a test.
+   *Part 0 and all tests.*
+
+### Going deeper
+
+The source this assignment is based on:
+
+- ***TypeScript Quickly*** by Yakov Fain and Anton Moiseev, ch. 3 "Object-oriented programming with classes and interfaces".
+
+TypeScript's type system:
+
+- **[TypeScript Handbook — Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)**. TypeScript is *structurally* typed: any object with the right shape fits an interface, even if it never says `implements`. Compare this with Python's ABCs in assignment 01.
+- **[TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)**. A preview of project 05b.
+
+What runs underneath:
+
+- **[TypeScript Handbook — Classes, the "Caveats" of `private`](https://www.typescriptlang.org/docs/handbook/2/classes.html#caveats)** and **[MDN — Private elements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_elements)**. TypeScript's `private` exists only at compile time. JavaScript's `#field` is private at runtime too.
+- **[MDN — Inheritance and the prototype chain](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Inheritance_and_the_prototype_chain)**. What `class` and `extends` really are in JavaScript: objects linked through prototypes.
+- **[TypeScript Playground](https://www.typescriptlang.org/play)**. Paste your classes and look at the JavaScript output: interfaces, `private` and `abstract` disappear completely.
+
+Design:
+
+- **[Refactoring Guru — Design Patterns catalog](https://refactoring.guru/design-patterns)**. The other classic patterns, with TypeScript examples. A preview of project 18.
+
+---
+
 ## Part 0 — Project setup
 
 Set up a TypeScript project in this folder:

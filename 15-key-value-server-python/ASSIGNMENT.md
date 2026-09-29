@@ -22,6 +22,62 @@ Servers in tests run in a background thread (or an asyncio task in Part 5), and 
 
 ---
 
+## Reading
+
+### Before you start
+
+The goal here is to know the vocabulary and the shape of each problem before you write code, not to know the solution.
+
+1. **[Real Python — Socket Programming in Python (Guide)](https://realpython.com/python-sockets/)**, sections "Background", "Socket API Overview" and "TCP Sockets".
+   What a socket is, and the sequence of calls on each side of a TCP connection: `socket`, `bind`, `listen`, `accept` on the server, and `connect` on the client, then `send`/`recv` and `close`. The article's later "Echo Client and Server" section is essentially Part 1, so read it after you've written yours.
+   *Parts 1 and 3.*
+2. **[Python docs — Socket Programming HOWTO](https://docs.python.org/3/howto/sockets.html)**
+   The concepts behind the calls. "Creating a Socket" explains the difference between the listening socket and the client socket that `accept` returns. "Using a Socket" explains why `recv` can return less than you asked for, and the three ways to mark where a message ends. "Binary Data" covers network byte order, and "Disconnecting" and "When Sockets Die" cover closing.
+   *Parts 1, 2 and 6.*
+3. **Python docs — `struct`**: [Byte Order, Size, and Alignment](https://docs.python.org/3/library/struct.html#byte-order-size-and-alignment) and [Format Characters](https://docs.python.org/3/library/struct.html#format-characters)
+   What `"!I"` means: network byte order and a 4-byte unsigned integer.
+   *Part 2.*
+4. **Python docs — `socket`**: [`socketpair`](https://docs.python.org/3/library/socket.html#socket.socketpair) and [Notes on socket timeouts](https://docs.python.org/3/library/socket.html#notes-on-socket-timeouts)
+   Two connected sockets without a server, and the three modes a socket can be in: blocking, non-blocking and timeout.
+   *Parts 2 and 6.*
+5. **[Python docs — OS exceptions](https://docs.python.org/3/library/exceptions.html#os-exceptions)**
+   `ConnectionError` and its subclasses (`ConnectionRefusedError`, `ConnectionResetError`, `BrokenPipeError`), and `TimeoutError`: what each one means on a network.
+   *Part 6.*
+6. **Assignment 12's reading on locks**, for the shared dictionary.
+   *Part 4.*
+7. **[Python docs — asyncio Streams](https://docs.python.org/3/library/asyncio-stream.html)**
+   [`start_server`](https://docs.python.org/3/library/asyncio-stream.html#asyncio.start_server), [`StreamReader`](https://docs.python.org/3/library/asyncio-stream.html#streamreader) and [`StreamWriter`](https://docs.python.org/3/library/asyncio-stream.html#streamwriter): the asyncio version of the same socket calls.
+   *Part 5.*
+8. **[MDN — An overview of HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview)** and **[MDN — HTTP messages](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Messages)**
+   HTTP as a client–server protocol over TCP, and the exact structure of a request and a response: start line, headers, empty line, body. Use **[MDN — HTTP response status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status)** as a reference for 200, 204, 400, 404 and 405.
+   *Part 7.*
+
+### Going deeper
+
+The sources this assignment is based on:
+
+- ***Foundations of Python Network Programming*, 3rd ed.** by Brandon Rhodes and John Goerzen, ch. 3 "TCP", ch. 5 "Network Data and Network Errors" and ch. 7 "Server Architecture" (not free).
+- ***Computer Networking: A Top-Down Approach*** by James Kurose and Keith Ross ([companion site](https://gaia.cs.umass.edu/kurose_ross/index.php)), ch. 2 "Application Layer" (HTTP and socket programming) and ch. 3 "Transport Layer" (how TCP makes an unreliable network reliable).
+
+How TCP works:
+
+- **[Ilya Grigorik — High Performance Browser Networking, ch. 2 "Building Blocks of TCP"](https://hpbn.co/building-blocks-of-tcp/)** (free online). The three-way handshake, flow control, slow start and head-of-line blocking: what happens under your `connect` and `sendall`.
+- **[Beej's Guide to Network Programming](https://beej.us/guide/bgnet/html/)**. The C socket API that Python's `socket` module wraps. A preview of project 16.
+
+Serving many clients:
+
+- **[Dan Kegel — The C10K problem](http://www.kegel.com/c10k.html)**. The classic article on why one thread per client stops scaling, and the event-based designs that followed.
+- **[OSTEP, ch. 33 — Event-based Concurrency](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)**. How a single thread serves many connections with `select`/`poll`, which is what asyncio does inside.
+- **[Python docs — `selectors`](https://docs.python.org/3/library/selectors.html)**. Write a multi-client server in one thread without asyncio. The Real Python sockets guide above has a section doing exactly that.
+
+Protocols:
+
+- **[Redis serialization protocol (RESP) specification](https://redis.io/docs/latest/develop/reference/protocol-spec/)**. The protocol of a real key-value server. Compare its framing, which mixes delimiters and length prefixes, with your design.
+- **[RFC 9112 — HTTP/1.1](https://www.rfc-editor.org/rfc/rfc9112)**. The actual specification of HTTP messages, including every way the length of a body can be determined.
+- **[MDN — Connection management in HTTP/1.x](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Connection_management_in_HTTP_1.x)**. Why real HTTP keeps connections open, and what that does to framing.
+
+---
+
 ## Part 0 — Project setup
 
 Set up the project in this folder:

@@ -16,6 +16,60 @@ The file for each part is already created. Class and method names given in **bol
 
 ---
 
+## Reading
+
+### Before you start
+
+The goal here is to know the vocabulary and the shape of each problem before you write code, not to know the solution.
+
+1. **[Real Python — Object-Oriented Programming (OOP) in Python](https://realpython.com/python3-object-oriented-programming/)**
+   Classes vs. instances, `__init__` and `self`, instance vs. class attributes, methods, inheritance, overriding a parent's method, and calling it with `super()`.
+   *Parts 2–4.*
+2. **[Python tutorial — Private Variables](https://docs.python.org/3/tutorial/classes.html#private-variables)**
+   Python has no truly private attributes. There's the `_name` convention ("don't touch this from outside") and name mangling for `__name`. This is why Part 2 protects the copy count with a property rather than a keyword.
+   *Parts 2–3.*
+3. **[Real Python — Python's property(): Add Managed Attributes to Your Classes](https://realpython.com/python-property/)**
+   What `@property` is, and how a getter with no setter makes an attribute read-only from outside.
+   *Parts 2–3.*
+4. **Python docs — `abc`**: [`abc.ABC`](https://docs.python.org/3/library/abc.html#abc.ABC) and [`@abstractmethod`](https://docs.python.org/3/library/abc.html#abc.abstractmethod)
+   Short. What makes a class abstract in Python, and why creating one raises `TypeError`.
+   *Part 2.*
+5. **[Python tutorial — User-defined Exceptions](https://docs.python.org/3/tutorial/errors.html#user-defined-exceptions)**
+   Defining your own exception class by inheriting from `Exception`. If `raise` and `try`/`except` feel rusty, read the sections just before it too.
+   *Part 1.*
+6. **[Real Python — Inheritance and Composition: A Python OOP Guide](https://realpython.com/inheritance-composition-python/)**
+   "Is a" vs. "has a", when to choose each, and how different classes can be used through one shared interface, which is polymorphism.
+   *Parts 2 and 4.*
+7. **pytest docs**: [Get Started](https://docs.pytest.org/en/stable/getting-started.html), [Assertions about expected exceptions](https://docs.pytest.org/en/stable/how-to/assert.html#assertions-about-expected-exceptions) and [How to capture stdout/stderr output](https://docs.pytest.org/en/stable/how-to/capture-stdout-stderr.html)
+   How pytest finds and runs tests, `pytest.raises`, and the `capsys` fixture.
+   *All parts' tests.*
+
+### Going deeper
+
+The source this assignment is based on:
+
+- ***Python Object-Oriented Programming For Beginners*** by Donald K. Fleck. The exercises this assignment is built from.
+
+Python's object model:
+
+- ***Fluent Python*, 2nd ed.** by Luciano Ramalho (not free):
+  - ch. 11 "A Pythonic Object": private and "protected" attributes, `__repr__`, `__slots__`.
+  - ch. 13 "Interfaces, Protocols, and ABCs": duck typing vs. ABCs vs. static protocols, and when each fits.
+  - ch. 14 "Inheritance: For Better or for Worse": `super()`, the method resolution order, mixins, and why inheritance is often the wrong tool.
+  - ch. 22 "Dynamic Attributes and Properties" and ch. 23 "Attribute Descriptors": how `@property` works.
+- **[Real Python — Python Classes: The Power of Object-Oriented Programming](https://realpython.com/python-classes/)**. A longer, more complete tour of classes than the intro article above.
+- **[Python docs — Descriptor HowTo Guide](https://docs.python.org/3/howto/descriptor.html)**. What `@property` really is: a descriptor, the mechanism behind properties, methods, `classmethod` and `staticmethod`.
+- **[Python docs — Data model](https://docs.python.org/3/reference/datamodel.html)**. The reference for special methods such as `__init__`, `__repr__` and `__eq__`: how your objects plug into the language.
+- **[Raymond Hettinger — Python's super() considered super!](https://rhettinger.wordpress.com/2011/05/26/super-considered-super/)**. What `super()` actually calls, and how cooperative multiple inheritance works.
+- **[Python docs — The Python 2.3 Method Resolution Order](https://docs.python.org/3/howto/mro.html)**. The C3 algorithm that decides which parent's method wins. Still how Python works today.
+
+Design:
+
+- **[Brandon Rhodes — The Composition Over Inheritance Principle](https://python-patterns.guide/gang-of-four/composition-over-inheritance/)**. The Gang of Four principle, shown with Python examples: why a class explosion from subclassing is fixed by composing objects.
+- **[PEP 544 — Protocols: Structural subtyping](https://peps.python.org/pep-0544/)**. Interfaces by shape instead of by inheritance (`typing.Protocol`). This is the bridge to TypeScript's interfaces in assignment 02.
+
+---
+
 ## Part 1 — Errors
 
 **File:** `library/errors.py`
