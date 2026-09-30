@@ -40,16 +40,22 @@ The goal here is to know the vocabulary and the shape of each problem before you
 3. **[OSTEP, ch. 32 — Common Concurrency Problems](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)**, section 32.3 "Deadlock Bugs" only.
    The four conditions a deadlock needs (mutual exclusion, hold-and-wait, no preemption, circular wait), and why making every thread take locks in one global order breaks the circular wait.
    *Part 4.*
-4. **Python docs — `threading`**: [Lock Objects](https://docs.python.org/3/library/threading.html#lock-objects), [Semaphore Objects](https://docs.python.org/3/library/threading.html#semaphore-objects), [Barrier Objects](https://docs.python.org/3/library/threading.html#barrier-objects)
-   The exact API: `acquire(timeout=...)`, what it returns, using a lock with `with`, and how a semaphore counts. Short, and worth having open while you work.
+4. **Python docs — `threading`**: [Thread Objects](https://docs.python.org/3/library/threading.html#thread-objects), [Lock Objects](https://docs.python.org/3/library/threading.html#lock-objects), [Semaphore Objects](https://docs.python.org/3/library/threading.html#semaphore-objects), [Barrier Objects](https://docs.python.org/3/library/threading.html#barrier-objects)
+   The exact API: what `target` and `args` are, what `start()` and `join()` do, `acquire(timeout=...)` and what it returns, using a lock with `with`, and how a semaphore counts. Short, and worth having open while you work.
    *Parts 1, 3, 4 and 6.*
-5. **[Python docs — `queue`, Queue Objects](https://docs.python.org/3/library/queue.html#queue-objects)**
+5. **[Real Python — Python Inner Functions: What Are They Good For?](https://realpython.com/inner-functions-what-are-they-good-for/)**
+   A function defined inside another function, and how it can use the outer function's variables (a **closure**). This is how the function each thread runs reaches the results list.
+   *Parts 1 and 5.*
+6. **[Python tutorial — Handling Exceptions](https://docs.python.org/3/tutorial/errors.html#handling-exceptions)**
+   `try`/`except`, and `except Exception as e` to keep the exception object and store it instead of letting it crash the thread.
+   *Parts 1 and 4.*
+7. **[Python docs — `queue`, Queue Objects](https://docs.python.org/3/library/queue.html#queue-objects)**
    What `maxsize` does, when `put` and `get` block, and how `task_done()` and `join()` work together.
    *Part 5.*
-6. **[Real Python — Speed Up Your Python Program With Concurrency](https://realpython.com/python-concurrency/)**
+8. **[Real Python — Speed Up Your Python Program With Concurrency](https://realpython.com/python-concurrency/)**
    I/O-bound vs. CPU-bound work, what the GIL is, and why threads speed up the first but not the second while multiprocessing speeds up both. It also covers asyncio, which you already know from project 11. Compare it with threads.
    *Part 7.*
-7. **[Python docs — `concurrent.futures`](https://docs.python.org/3/library/concurrent.futures.html#executor-objects)**: Executor Objects and ProcessPoolExecutor
+9. **[Python docs — `concurrent.futures`](https://docs.python.org/3/library/concurrent.futures.html#executor-objects)**: Executor Objects and ProcessPoolExecutor
    `Executor.map`, and the rules a function must follow to be sent to another process.
    *Part 7.*
 
@@ -95,21 +101,81 @@ Everything else in this assignment uses the standard library: `threading`, `queu
 
 **File:** `bank/runner.py`
 
-A `threading.Thread(target=func, args=(...))` runs `func` in a new thread once you call `.start()`. `.join()` waits until that thread has finished. A thread that isn't joined may still be running when your test checks the result.
+### What this function is for
 
-Write **`run_concurrently(n, func, *args)`**:
+To see a race condition, you need many threads calling the same method at the same moment, for example 50 threads each calling `account.withdraw(10)`. `run_concurrently` is the tool that does that. You write it now, and the tests in every later part use it:
 
-- Creates `n` threads. Each one waits at a shared `threading.Barrier(n)` and then calls `func(*args)`.
-- Starts all of them, then joins all of them.
-- Returns a list of the `n` return values. If `func` raised an exception in a thread, the exception object goes in the list instead.
+```python
+results = run_concurrently(50, account.withdraw, 10)
+# account.withdraw(10) ran 50 times, in 50 threads, all starting together.
+# results is a list of the 50 return values.
+```
 
-A thread can't return a value to the code that started it, so you need to collect results yourself, for example into a list where each thread writes to its own index.
+The parameters:
+
+- **`n`**: how many threads to run.
+- **`func`**: any function. `run_concurrently` doesn't know or care what it does; it only calls it. In this part's tests you pass small functions that you define in the test file. In later parts you pass methods like `account.withdraw`.
+- **`*args`**: the arguments for `func`. Every thread calls `func(*args)` with the same arguments.
+
+### Background: how a thread runs a function
+
+`threading.Thread(target=f, args=(a, b))` creates a thread. Nothing runs yet. When you call `.start()`, the new thread calls `f(a, b)`. `.join()` makes the calling code wait until that thread has finished.
+
+A thread has two limits that shape this function:
+
+1. **It runs exactly one function**, the `target`. If you want a thread to do several steps (wait at the barrier, then call `func`, then save the result), write a function that does those steps, and make *that* function the `target`.
+2. **Whatever the target returns is thrown away, and an exception it raises is printed and lost.** The code that started the thread never sees either one.
+
+The standard way around both limits is a results list with one slot per thread, and a target function that writes into its own slot. Here is the pattern on an unrelated problem, squaring numbers in parallel:
+
+```python
+import threading
+
+def square_all(numbers):
+    results = [None] * len(numbers)          # one slot per thread
+
+    def worker(index, number):               # the function each thread runs
+        results[index] = number * number     # each thread writes only to its own slot
+
+    threads = [threading.Thread(target=worker, args=(i, x))
+               for i, x in enumerate(numbers)]
+    for t in threads:
+        t.start()                            # first start them all...
+    for t in threads:
+        t.join()                             # ...then wait for them all
+    return results
+
+square_all([2, 3, 4])                        # [4, 9, 16]
+```
+
+Three things to notice:
+
+- `worker` is defined **inside** `square_all`, so it can use `results`. A function defined inside another function can read the outer function's variables. This is called a **closure**.
+- Each thread gets its **index** through `args`, so it knows which slot is its own.
+- `start` and `join` are in **two separate loops**. If one loop did `start()` then `join()` for each thread, each thread would finish before the next one started, and nothing would run at the same time.
+
+### What to write
+
+Write **`run_concurrently(n, func, *args)`**. It must:
+
+1. Create one `threading.Barrier(n)` and a results list with `n` slots.
+2. Create `n` threads. Each one runs a function that you define inside `run_concurrently`, which:
+   1. calls `barrier.wait()`;
+   2. calls `func(*args)`;
+   3. stores the return value in its own slot. If `func` raised an exception, it catches it with `except Exception as e:` and stores the exception object `e` in its slot instead.
+3. Starts all `n` threads, then joins all `n` threads, in two separate loops.
+4. Returns the results list. Slot `i` holds the result of thread `i`.
+
+Only the threads call `barrier.wait()`. `run_concurrently` itself must not. `Barrier(n)` releases when exactly `n` callers are waiting. If the main code called `wait()`, it would block right there, before starting the threads, and wait forever.
 
 ### Test that:
 
-- `run_concurrently(5, func)` calls `func` exactly five times, and returns five results.
-- An exception raised inside a thread appears in the returned list, instead of being lost.
-- Five calls of a function that sleeps 0.2 seconds take about 0.2 seconds in total, not 1 second.
+Write these in `tests/test_runner.py`. Define the small functions they need in the test file.
+
+- `run_concurrently(5, func)` calls `func` exactly five times and returns a list of five results. To count the calls, have `func` append to a list defined in the test. `list.append` is safe to call from several threads at once in CPython.
+- The arguments reach `func`: with a function that adds its two arguments, `run_concurrently(3, add, 2, 3)` returns `[5, 5, 5]`.
+- An exception raised inside a thread appears in the returned list: with a function that raises `ValueError`, every item in the result is a `ValueError` (check with `isinstance`).
+- Five calls of a function that sleeps 0.2 seconds take less than 0.5 seconds in total, not about 1 second. Measure with `time.perf_counter()` before and after the call.
 
 ---
 
@@ -119,25 +185,34 @@ A thread can't return a value to the code that started it, so you need to collec
 
 Write the class **`Account`**:
 
-- **`Account(account_id, balance, pause=0)`**: `account_id` is an `int`. `pause` is the gap described in the introduction.
-- **`balance`**: a read-only property.
-- **`withdraw(amount)`**: if the balance is at least `amount`, sleeps `pause` seconds, then subtracts `amount`, and returns `True`. Otherwise returns `False`.
-- **`deposit(amount)`**: reads the balance into a local variable, sleeps `pause` seconds, then writes back the local value plus `amount`.
+- **`Account(account_id, balance, pause=0)`**: `account_id` is an `int`. Store the balance in a private attribute, such as `self._balance`. `pause` is the gap described in the introduction; store it too.
+- **`account_id`** and **`balance`**: read-only properties.
+- **`withdraw(amount)`**, in this exact order:
+  1. If the balance is less than `amount`, return `False`.
+  2. Otherwise, `time.sleep(self._pause)`.
+  3. Subtract `amount` from the balance.
+  4. Return `True`.
+- **`deposit(amount)`**, in this exact order:
+  1. Read the balance into a local variable.
+  2. `time.sleep(self._pause)`.
+  3. Set the balance to that local variable plus `amount`.
 
-Don't use any locks in this part. Write it the straightforward way.
+Don't use any locks in this part.
 
 Both methods contain a race:
 
-- `withdraw` is **check-then-act**: between checking the balance and subtracting, another thread can withdraw too. Both checks pass, and the balance goes below zero.
+- `withdraw` is **check-then-act**: between checking the balance (step 1) and subtracting (step 3), another thread can withdraw too. All of them pass the check, and the balance goes below zero.
 - `deposit` is **read-modify-write**: two threads read the same old balance, each adds its amount, and the second write overwrites the first. One deposit is lost.
 
 ### Test that:
 
-- Without concurrency, `withdraw` and `deposit` work correctly.
-- An account with balance 100 and `pause=0.001`: 50 threads each withdrawing 10 at once leave a **negative** balance.
-- An account with balance 0 and `pause=0.001`: 20 threads each depositing 10 at once leave a balance **below 200**.
+Write these in `tests/test_account.py`.
 
-These tests pass when the bug is present. That's intended: they prove the race exists. In Part 3 you will turn them around.
+- Without threads, `withdraw` and `deposit` work correctly, and `withdraw` returns `False` when the balance is too low.
+- An account with balance 100 and `pause=0.001`: `run_concurrently(50, account.withdraw, 10)` leaves a **negative** balance.
+- An account with balance 0 and `pause=0.001`: `run_concurrently(20, account.deposit, 10)` leaves a balance **below 200**.
+
+These tests pass because the bug is present. That's intended: they prove the race exists. In Part 3 you will write the fixed version.
 
 ---
 
@@ -147,14 +222,18 @@ These tests pass when the bug is present. That's intended: they prove the race e
 
 A **lock** (also called a **mutex**) lets only one thread at a time run a section of code. The code between acquiring and releasing the lock is the **critical section**. Any other thread that tries to acquire the lock waits until it is released.
 
-Write **`SafeAccount`**, with the same constructor and methods as `Account`, but each `withdraw` and `deposit` holds a `threading.Lock` for its whole check-then-act or read-modify-write sequence. Use `with self._lock:`, which releases the lock even if an exception is raised.
+Write the class **`SafeAccount`**, with the same constructor, properties and methods as `Account`. You can write it as a subclass of `Account` or as a separate class; your choice.
 
-Also add a `lock` property that exposes the account's lock. You'll need it in Part 4.
+- In the constructor, create a lock: `self._lock = threading.Lock()`.
+- In `withdraw` and `deposit`, put **all** the steps inside `with self._lock:`. `with` acquires the lock at the start of the block and releases it at the end, even if an exception is raised.
+- Add a read-only property **`lock`** that returns the lock. Part 4 needs it.
 
 ### Test that:
 
-- The same concurrent withdrawal as in Part 2 leaves the balance at exactly **0**, and exactly 10 withdrawals return `True`.
-- The same concurrent deposit as in Part 2 leaves the balance at exactly **200**.
+Add these to `tests/test_account.py`.
+
+- `run_concurrently(50, account.withdraw, 10)` on a `SafeAccount` with balance 100 and `pause=0.001` leaves the balance at exactly **0**, and exactly 10 of the results are `True` (`results.count(True) == 10`).
+- `run_concurrently(20, account.deposit, 10)` on a `SafeAccount` with balance 0 and `pause=0.001` leaves the balance at exactly **200**.
 
 In `README.md`, explain why the lock has to cover the check **and** the update together, and not each one separately.
 
@@ -168,27 +247,42 @@ A transfer moves money from one account to another. Both balances must change to
 
 The obvious way is to lock the source, then lock the destination. Now suppose thread 1 transfers from A to B while thread 2 transfers from B to A. Thread 1 holds A's lock and waits for B's. Thread 2 holds B's lock and waits for A's. Neither can continue, ever. This is a **deadlock**.
 
+### Before you start: changing a balance while holding the lock
+
+A transfer can't call `src.withdraw()` and `dst.deposit()`, because those methods acquire the account's lock, and the transfer already holds it. `threading.Lock` is not reentrant: a thread that tries to acquire a lock it already holds waits for itself, forever.
+
+So add two methods to `SafeAccount` that change the balance **without** taking the lock, for example `_debit(amount)` and `_credit(amount)`. The leading underscore says they are internal. Only code that already holds the account's lock may call them.
+
 ### 4a. The naive transfer
 
-Write **`transfer_naive(src, dst, amount, pause=0, lock_timeout=1)`**:
+Write **`transfer_naive(src, dst, amount, pause=0, lock_timeout=1)`**, in this order:
 
-- Acquires `src.lock`, sleeps `pause` seconds, then tries to acquire `dst.lock` with `dst.lock.acquire(timeout=lock_timeout)`.
-- If the second lock can't be acquired in time, releases what it holds and raises `TimeoutError`. A real deadlock would hang forever, and so would your tests. The timeout lets you detect it instead.
-- Otherwise moves the money and releases both locks.
+1. Acquire `src.lock` with `src.lock.acquire()`.
+2. `time.sleep(pause)`. This gives the other thread time to take its first lock, which is what makes the deadlock happen reliably in the test.
+3. Try to acquire `dst.lock` with `dst.lock.acquire(timeout=lock_timeout)`. It returns `True` if it got the lock, and `False` if the time ran out.
+4. If it returned `False`: release `src.lock` and raise `TimeoutError`. A real deadlock would hang forever, and so would your tests. The timeout lets you detect it instead.
+5. Otherwise, move the money with `_debit` and `_credit`, and release both locks. Use `try`/`finally` so the locks are released even if something fails.
+
+`transfer_naive` doesn't need to check the balance.
 
 ### 4b. Lock ordering
 
-The standard fix is to make every thread acquire locks in **the same global order**. If everyone locks the account with the lower `account_id` first, the circular wait can't happen.
+The standard fix is to make every thread acquire locks in **the same global order**. If everyone locks the account with the lower `account_id` first, the circular wait can't happen: a thread holding A's lock and a thread holding B's lock can't each be waiting for the other.
 
-Write **`transfer(src, dst, amount, pause=0)`**, which locks both accounts in order of `account_id`, then moves the money. It raises `ValueError` if `src` has less than `amount`, and moves nothing in that case.
+Write **`transfer(src, dst, amount, pause=0)`**:
 
-Transfers work directly on the balances while holding both locks, so give `SafeAccount` whatever internal methods you need for that. Don't call `withdraw` and `deposit` from inside `transfer`, since they try to take a lock that's already held, and `threading.Lock` is not reentrant: a thread that tries to acquire a lock it already holds waits for itself forever.
+1. If `src` and `dst` are the same account, raise `ValueError`. Locking the same lock twice would deadlock on its own.
+2. Of the two accounts, call the one with the lower `account_id` `first` and the other one `second`.
+3. Acquire `first.lock`, `time.sleep(pause)`, then acquire `second.lock`. Use nested `with` blocks.
+4. While holding both: if `src` has less than `amount`, raise `ValueError` and change nothing. Otherwise, move the money with `_debit` and `_credit`.
 
 ### Test that:
 
-- Two `transfer_naive` calls at once, A→B and B→A, with `pause=0.05` and `lock_timeout=0.5`, raise `TimeoutError`.
-- The same pair with `transfer` completes, and the total of both balances is unchanged.
-- 100 random transfers between 5 accounts, running at once, never deadlock, and the total money in the bank stays the same.
+Write these in `tests/test_transfer.py`.
+
+- **The naive transfer deadlocks.** `run_concurrently` can't run this test, because the two threads need different arguments (A→B and B→A). Create the two threads yourself: each one runs a small function that calls `transfer_naive` with `pause=0.05` and `lock_timeout=0.5`, and appends any exception it catches to a shared list. Start both, join both, and check that the list contains **at least one** `TimeoutError`. Only one is guaranteed: after one thread times out and releases its lock, the other can get it and complete.
+- **Lock ordering fixes it.** The same two threads calling `transfer` instead complete without any exception, and the total of both balances is unchanged.
+- **Many random transfers.** Create 5 `SafeAccount`s with 1,000 each. Write a function with no arguments that picks two *different* random accounts and a random amount, and calls `transfer`, ignoring `ValueError`. Run it with `run_concurrently(100, that_function)`. The total money in the bank must still be 5,000. If there is a deadlock, this test will hang instead of failing. That's acceptable here: a test that hangs means a deadlock.
 
 ---
 
@@ -198,24 +292,38 @@ Transfers work directly on the balances while holding both locks, so give `SafeA
 
 Real systems rarely start a thread per request. Instead, **producers** put work into a **queue**, and a fixed number of **consumer** threads (workers) take work out and process it.
 
-Python's `queue.Queue` is already thread-safe: it does its own locking. With `maxsize`, it is a **bounded buffer**. `put` blocks when the queue is full, so a fast producer can't use unlimited memory, and `get` blocks when it's empty, so idle workers wait without spinning.
+Python's `queue.Queue` is already thread-safe: it does its own locking. With `maxsize`, it is a **bounded buffer**. `put` blocks when the queue is full, so a fast producer can't use unlimited memory, and `get` blocks when it's empty, so idle workers wait without using the CPU.
 
 Write the class **`TransactionProcessor`**:
 
-- **`TransactionProcessor(bank, workers, queue_size)`**: `bank` is a dict from account ID to `SafeAccount`.
-- **`start()`** starts `workers` worker threads. Each one repeatedly takes a transaction from the queue and applies it with `transfer`.
-- **`submit(src_id, dst_id, amount)`** puts a transaction on the queue.
-- **`shutdown()`** waits until every submitted transaction has been processed, stops all the workers, and joins them.
+- **`TransactionProcessor(bank, workers, queue_size, pause=0)`**:
+  - `bank` is a dict from account ID to `SafeAccount`.
+  - `workers` is the number of worker threads.
+  - `queue_size` is the `maxsize` of the queue.
+  - `pause` is passed to every `transfer` call. Tests use it to make the workers slow.
+  - Store the queue in a public attribute **`queue`**, and the worker threads, once created, in a list attribute **`threads`**. The tests use both.
+- **`submit(src_id, dst_id, amount)`** puts the tuple `(src_id, dst_id, amount)` on the queue. When the queue is full, `put` blocks until there's room.
+- **`start()`** creates and starts `workers` threads. Each one runs a loop:
+  1. Take an item from the queue with `get()`.
+  2. If the item is the sentinel `None` (see below), call `task_done()` and exit the loop.
+  3. Otherwise, apply it with `transfer(bank[src_id], bank[dst_id], amount, pause)`. If `transfer` raises `ValueError`, count it as failed.
+  4. Call `task_done()` for the item, whether the transfer succeeded or failed.
+- **`shutdown()`** stops the processor, in this order:
+  1. `queue.join()`: blocks until `task_done()` has been called for every item that was put on the queue.
+  2. Put one `None` on the queue for each worker. A worker that gets `None` exits its loop. This is called a **sentinel**.
+  3. Join all the worker threads.
 - **`failed`**: a read-only property with the number of transactions that failed with `ValueError`.
 
-How do the workers know when to stop? A common way is a **sentinel**: `shutdown` puts one special value, such as `None`, on the queue for each worker, and a worker that receives it exits its loop. `Queue.task_done()` and `Queue.join()` let you wait until all items have been processed.
+Several workers increment the failed count, so updating it is a read-modify-write race, exactly like `deposit` in Part 2. Protect it with a lock.
 
 ### Test that:
 
-- 1,000 transactions submitted to a processor with 4 workers are all applied, and the total money is unchanged.
-- Transactions that exceed the balance are counted in `failed` and don't change any balance.
-- After `shutdown()`, all worker threads have finished (`thread.is_alive()` is `False`).
-- With `queue_size=2` and workers that are slow, `submit` blocks rather than growing the queue. One way to check: `queue.qsize()` never goes above 2.
+Write these in `tests/test_processor.py`.
+
+- 1,000 random transactions between 5 accounts, submitted to a processor with 4 workers and then `shutdown()`, leave the total money unchanged.
+- Transactions larger than the source's balance are counted in `failed`, and the balances stay exactly as they were.
+- After `shutdown()`, every thread in `processor.threads` has finished (`thread.is_alive()` is `False`).
+- **`submit` blocks when the queue is full.** A processor with `workers=1`, `queue_size=2` and `pause=0.2`: submitting 10 transactions takes **at least 1 second**, because `submit` has to wait for the slow worker to make room. Without the bound, all 10 would be submitted almost instantly.
 
 ---
 
@@ -225,20 +333,27 @@ How do the workers know when to stop? A common way is a **sentinel**: `shutdown`
 
 The bank calls an external fraud-check service before large transfers. The service's contract allows at most 3 requests at a time.
 
-A lock allows one thread in. A **semaphore** allows up to *n*. `threading.Semaphore(n)` is a counter of free slots: `with semaphore:` takes a slot, waiting if none is free, and gives it back at the end.
+A lock allows one thread in. A **semaphore** allows up to *n*. `threading.Semaphore(n)` is a counter of free slots: `with semaphore:` takes a slot, waiting if none is free, and gives it back at the end of the block.
 
 Write the class **`FraudChecker`**:
 
-- **`FraudChecker(max_concurrent, delay)`**: `delay` is how long one check takes, simulated with `time.sleep`.
-- **`check(transaction)`**: holds a semaphore slot, sleeps `delay`, and returns `True`.
+- **`FraudChecker(max_concurrent, delay)`**: creates a `threading.Semaphore(max_concurrent)`. `delay` is how long one check takes.
+- **`check(transaction)`**: `transaction` can be any value. The checker ignores it; it's there so the method looks like a real API. Inside `with self._semaphore:`:
+  1. Add 1 to a counter of checks running right now, and if that counter is higher than `peak`, update `peak`.
+  2. `time.sleep(delay)`, which stands in for the call to the service.
+  3. Subtract 1 from the running counter.
+
+  Then return `True`.
 - **`peak`**: a read-only property with the highest number of checks that were ever running at the same moment.
 
-Keeping `peak` correct requires shared state that several threads update. Protect it properly.
+The semaphore and the counter need **different** tools. The semaphore limits how many threads are inside at once, but with `max_concurrent=3`, three threads update the counter at the same time, a read-modify-write race again. Protect the counter and `peak` with a separate `threading.Lock`.
 
 ### Test that:
 
-- 10 checks with `max_concurrent=3` and `delay=0.1`, run at once, give `peak == 3`, and take about 0.4 seconds (4 rounds).
-- With `max_concurrent=10`, the same 10 checks take about 0.1 seconds.
+Write these in `tests/test_fraud.py`.
+
+- `run_concurrently(10, checker.check, None)` with `max_concurrent=3` and `delay=0.1`: `checker.peak == 3`, and the call takes between 0.35 and 0.6 seconds (4 rounds of 0.1 seconds: 3 + 3 + 3 + 1).
+- The same with `max_concurrent=10` takes less than 0.2 seconds.
 
 ---
 
@@ -250,22 +365,29 @@ This part answers a question every Python developer is asked: when do threads ma
 
 In CPython, the **Global Interpreter Lock** (GIL) allows only one thread to run Python bytecode at a time. Threads still help with **I/O-bound** work: while a thread waits for the network or the disk, it releases the GIL and another thread runs. That's why Parts 1 and 6 got faster with threads. For **CPU-bound** work, pure Python computation, threads take turns on one core and give no speedup. To use several cores, you need several **processes**, each with its own interpreter and its own GIL.
 
-`concurrent.futures` gives both a single interface: **`ThreadPoolExecutor`** and **`ProcessPoolExecutor`**. `executor.map(func, items)` runs `func` on every item using the pool and returns the results in order.
+`concurrent.futures` gives both a single interface: **`ThreadPoolExecutor`** and **`ProcessPoolExecutor`**. `executor.map(func, items)` runs `func` on every item using the pool, and returns the results in the same order as `items`. It returns an iterator, so wrap it in `list(...)`.
 
 In `workloads.py`, write:
 
-- **`io_task(seconds)`**: sleeps, then returns `seconds`. Stands in for a network call.
-- **`cpu_task(n)`**: does pure-Python computation that takes about half a second, for example summing the squares of the numbers up to `n`, and returns the result. Choose `n` so it takes about that long on your machine.
-- **`run_serial(func, items)`**, **`run_threads(func, items, workers)`** and **`run_processes(func, items, workers)`**: each runs `func` on every item and returns the list of results.
+- **`io_task(seconds)`**: `time.sleep(seconds)`, then returns `seconds`. Stands in for a network call.
+- **`cpu_task(n)`**: sums the squares of the numbers from 0 to `n` with plain Python (a loop or `sum` over a generator, no libraries), and returns the sum.
+- **`CPU_N`**: a module constant, the `n` for which `cpu_task` takes about half a second on your machine. Find it by timing `cpu_task` with a few values of `n` in the Python shell.
+- **`run_serial(func, items)`**: calls `func` on each item in turn, in a normal loop. Returns the list of results.
+- **`run_threads(func, items, workers)`**: the same, using `ThreadPoolExecutor(max_workers=workers)` and `executor.map`.
+- **`run_processes(func, items, workers)`**: the same, using `ProcessPoolExecutor(max_workers=workers)`.
 
-Functions sent to a `ProcessPoolExecutor` are pickled and sent to another process, so they must be defined at the top level of a module, not inside a test or another function.
+A `ProcessPoolExecutor` sends the function to another process by **pickling** it: it sends its name and module, and the other process imports it. So the function must be defined at the top level of a module. Always pass `io_task` and `cpu_task` from `bank.workloads`, never a function defined inside a test or a `lambda`.
+
+On macOS, each new process starts a fresh Python interpreter and re-imports the main script (the `spawn` start method). Under pytest this just works. But if you try `run_processes` from your own script, put the call under `if __name__ == "__main__":`. Otherwise every new process runs your script again. Code piped into `python -` fails with `BrokenProcessPool`, because the new processes can't re-import it.
 
 ### Test that:
 
-- For 8 `io_task(0.2)` calls: threads are much faster than serial.
-- For 4 `cpu_task` calls: threads are **not** meaningfully faster than serial.
-- For the same 4 `cpu_task` calls: processes are meaningfully faster than serial (skip this test if `os.cpu_count()` is less than 2).
-- All three runners return the same results in the same order.
+Write these in `tests/test_workloads.py`. Time each run with `time.perf_counter()`.
+
+- **I/O, threads help:** for 8 calls of `io_task(0.2)`, `run_threads` with 8 workers takes less than **half** the time of `run_serial`.
+- **CPU, threads don't help:** for 4 calls of `cpu_task(CPU_N)`, `run_threads` with 4 workers takes at least **0.8 times** the time of `run_serial`.
+- **CPU, processes help:** for the same 4 calls, `run_processes` with 4 workers takes less than **0.75 times** the time of `run_serial`. Skip this test if `os.cpu_count()` is less than 2 (`pytest.mark.skipif`).
+- All three runners return the same results, in the same order.
 
 Record the timings in `README.md`.
 
