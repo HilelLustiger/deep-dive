@@ -1,4 +1,5 @@
 import time
+import threading
 
 class Account:
 
@@ -37,3 +38,28 @@ class Account:
         time.sleep(self.pause)
         self._balance = temp + amount
         return True
+
+
+class SafeAccount(Account):
+
+    def __init__(self, account_id, balance, pause=0):
+        super().__init__(account_id, balance, pause)
+        self._lock = threading.Lock()
+
+    @property
+    def lock(self):
+        return self._lock
+
+    def withdraw(self, amount: float):
+        with self._lock:
+            return super().withdraw(amount)
+
+    def deposit(self, amount: float):
+        with self._lock:
+            return super().deposit(amount)
+
+    def _debit(self, amount: float):
+        self._balance -= amount
+
+    def _credit(self, amount: float):
+        self._balance += amount

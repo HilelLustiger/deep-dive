@@ -1,5 +1,5 @@
 from bank.runner import run_concurrently
-from bank.account import Account
+from bank.account import Account, SafeAccount
 
 
 def test_withdraw_subtracts_amount_and_returns_true():
@@ -32,3 +32,16 @@ def test_concurrent_deposit_loses_deposits():
     account = Account(1, 0, 0.001)
     run_concurrently(20, account.deposit, 10)
     assert account.balance < 200
+
+
+def test_safe_account_concurrent_withdraw_never_overdraws():
+    account = SafeAccount(1, 100, 0.001)
+    res = run_concurrently(50, account.withdraw, 10)
+    assert res.count(True) == 10
+    assert account.balance == 0
+
+
+def test_safe_account_concurrent_deposit_keeps_every_deposit():
+    account = SafeAccount(1, 0, 0.001)
+    run_concurrently(20, account.deposit, 10)
+    assert account.balance == 200
