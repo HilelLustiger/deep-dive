@@ -50,5 +50,6 @@ def main():
 
     asyncio.run(run(urls, args.timeout, args.max_concurrent))
 
+
 if __name__ == "__main__":
     main()

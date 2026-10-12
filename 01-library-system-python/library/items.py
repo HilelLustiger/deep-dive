@@ -15,27 +15,31 @@ class LibraryItem(abc.ABC):
 
     @property
     def title(self):
-        return self._title 
+        return self._title
 
     @property
     def total_copies(self):
         return self._total_copies
-    
+
     @property
     def available_copies(self):
         return self._available_copies
-    
+
     def checkout(self):
         if self._available_copies > 0:
             self._available_copies -= 1
         else:
-            raise ItemUnavailableError(f"There are no available copies of '{self._title}'.")
+            raise ItemUnavailableError(
+                f"There are no available copies of '{self._title}'."
+            )
 
     def return_copy(self):
         if self._available_copies < self._total_copies:
             self._available_copies += 1
         else:
-            raise InvalidReturnError(f"All copies of '{self._title}' are already available.")
+            raise InvalidReturnError(
+                f"All copies of '{self._title}' are already available."
+            )
 
     @abc.abstractmethod
     def describe(self):
@@ -50,7 +54,7 @@ class Book(LibraryItem):
     @property
     def author(self):
         return self._author
-    
+
     def describe(self):
         return f"{self.title} by {self.author} - {self.available_copies} / {self.total_copies} available"
 

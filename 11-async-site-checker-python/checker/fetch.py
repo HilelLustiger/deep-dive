@@ -4,7 +4,9 @@ import aiohttp
 from .models import CheckResult
 
 
-async def check_url(session: aiohttp.ClientSession, url: str, timeout: float) -> CheckResult:
+async def check_url(
+    session: aiohttp.ClientSession, url: str, timeout: float
+) -> CheckResult:
     if not url.startswith(("http://", "https://")):
         raise ValueError(f"Invalid URL: {url}. Must start with http:// or https://")
 

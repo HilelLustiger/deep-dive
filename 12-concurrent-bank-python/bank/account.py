@@ -1,17 +1,17 @@
 import time
 import threading
 
-class Account:
 
+class Account:
     def __init__(self, account_id, balance, pause=0):
-        self._balance = balance  
+        self._balance = balance
         self._account_id = account_id
         self._pause = pause
 
     @property
     def account_id(self):
         return self._account_id
-    
+
     @property
     def balance(self):
         return self._balance
@@ -19,7 +19,7 @@ class Account:
     @property
     def pause(self):
         return self._pause
-    
+
     def withdraw(self, amount: float):
         if amount <= 0:
             raise ValueError
@@ -41,7 +41,6 @@ class Account:
 
 
 class SafeAccount(Account):
-
     def __init__(self, account_id, balance, pause=0):
         super().__init__(account_id, balance, pause)
         self._lock = threading.Lock()

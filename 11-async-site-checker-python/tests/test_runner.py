@@ -1,7 +1,14 @@
 import pytest
 import time
 import asyncio
-from checker.runner import check_sequential, check_with_gather, check_with_taskgroup, check_as_completed, check_with_deadline, check_limited
+from checker.runner import (
+    check_sequential,
+    check_with_gather,
+    check_with_taskgroup,
+    check_as_completed,
+    check_with_deadline,
+    check_limited,
+)
 
 
 async def test_sequential_takes_the_sum_of_request_times(base_url: str):
@@ -33,7 +40,9 @@ async def test_all_runners_return_results_in_input_order(base_url: str):
 
     for func in funcs:
         results = await func(urls, 3)
-        assert [res.url for res in results] == urls, f"{func.__name__} returned results out of order"
+        assert [res.url for res in results] == urls, (
+            f"{func.__name__} returned results out of order"
+        )
 
 
 async def test_taskgroup_with_malformed_url_raises_exception_group(base_url):
@@ -69,7 +78,9 @@ async def test_as_completed_yields_first_result_immediately(base_url: str):
 async def test_deadline_separates_finished_results_from_unfinished_urls(base_url: str):
     urls = [f"{base_url}/ok", f"{base_url}/slow/0.2", f"{base_url}/slow/3"]
     results, unfinished = await check_with_deadline(urls, 4, 1)
-    assert set([res.url for res in results]) == set([f"{base_url}/ok", f"{base_url}/slow/0.2"])
+    assert set([res.url for res in results]) == set(
+        [f"{base_url}/ok", f"{base_url}/slow/0.2"]
+    )
     assert unfinished == [f"{base_url}/slow/3"]
 
 
@@ -84,7 +95,11 @@ async def test_deadline_returns_when_the_deadline_expires(base_url: str):
 async def test_deadline_cancels_unfinished_tasks(base_url: str):
     urls = [f"{base_url}/slow/6"]
     await check_with_deadline(urls, 5, 0.5)
-    pending = [task for task in asyncio.all_tasks() if task.get_coro().__qualname__ == "check_url"]
+    pending = [
+        task
+        for task in asyncio.all_tasks()
+        if task.get_coro().__qualname__ == "check_url"
+    ]
     assert pending == []
 
 

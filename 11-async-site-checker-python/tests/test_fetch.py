@@ -29,5 +29,5 @@ async def test_slow_response_stops_at_timeout(base_url: str):
 
 
 async def test_non_http_url_raises_value_error():
-        with pytest.raises(ValueError):
-            await check_url(None, "ftp://example.com", 3)
+    with pytest.raises(ValueError):
+        await check_url(None, "ftp://example.com", 3)

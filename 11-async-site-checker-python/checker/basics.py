@@ -14,6 +14,7 @@ def async_timed(coro):
         end = time.perf_counter()
         wrapper.last_elapsed = end - start
         return output
+
     wrapper.last_elapsed = None
     return wrapper
 

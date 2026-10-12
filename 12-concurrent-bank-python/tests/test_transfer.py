@@ -18,7 +18,6 @@ def test_transfer_naive_deadlocks_on_opposite_transfers():
         except Exception as e:
             exceptions.append(e)
 
-
     t1 = threading.Thread(target=helper, args=(account_a, account_b))
     t2 = threading.Thread(target=helper, args=(account_b, account_a))
 
@@ -42,7 +41,6 @@ def test_transfer_completes_opposite_transfers_and_keeps_total():
         except Exception as e:
             exceptions.append(e)
 
-
     t1 = threading.Thread(target=helper, args=(account_a, account_b, 20))
     t2 = threading.Thread(target=helper, args=(account_b, account_a, 50))
 
@@ -55,7 +53,6 @@ def test_transfer_completes_opposite_transfers_and_keeps_total():
     assert not exceptions
     assert account_a.balance == 130
     assert account_b.balance == 70
-
 
 
 def test_many_random_transfers_keep_total_money():
@@ -73,7 +70,7 @@ def test_many_random_transfers_keep_total_money():
             pass
 
     res = run_concurrently(100, helper)
-    
+
     total = 0
     for acc in accounts:
         total += acc.balance
