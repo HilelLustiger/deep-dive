@@ -4,7 +4,7 @@ A structured curriculum of small projects in software fundamentals: object-orien
 
 Each project is a focused assignment built from an established textbook, university course or official documentation, implemented from scratch, and verified by tests.
 
-**Languages:** Python · TypeScript · C++
+**Languages:** Python · TypeScript · C++ · Bash
 **Current focus:** the Python track (object-oriented programming, asynchronous programming, concurrency and networking)
 
 ## How each project works
@@ -96,9 +96,9 @@ A project is complete only when every requirement in its assignment is backed by
 
 - **[OPS01 · Containers and CI/CD](OPS01/)** — Python · Docker · GitHub Actions  
   Images and layers, build cache, Compose networking and volumes, healthchecks, CI pipelines, service containers, publishing to a registry
-- **OPS02 · Deploying to a Server** — Docker · GitHub Actions  
+- **OPS02 · Deploying to a Server** — Bash · Docker · GitHub Actions  
   Linux server over SSH, reverse proxy and TLS, deploying by image SHA, rollback
-- **OPS03 · Observability** — Python · Prometheus · Grafana  
+- **OPS03 · Observability** — TypeScript · Prometheus · Grafana  
   Structured logs, metrics, liveness vs. readiness, alerting
-- **OPS04 · Kubernetes Basics** — Kubernetes  
+- **OPS04 · Kubernetes Basics** — Python · TypeScript · Kubernetes  
   Deployments, Services, ConfigMaps and Secrets, probes, rolling updates
