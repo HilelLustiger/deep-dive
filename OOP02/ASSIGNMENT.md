@@ -1,10 +1,10 @@
-# Assignment 02 — Library System (TypeScript)
+# Assignment OOP02 — Library System (TypeScript)
 
 **Topics:** class inheritance, access modifiers, static members and singletons, `super`, abstract classes, method overloading, interfaces, programming to interfaces
 
 ## Introduction
 
-In this assignment you will build the library system from [Assignment 01](../01-library-system-python/ASSIGNMENT.md) again, this time in TypeScript.
+In this assignment you will build the library system from [Assignment OOP01](../OOP01/ASSIGNMENT.md) again, this time in TypeScript.
 
 The system is the same: the library owns books and DVDs, each in one or more copies. Members borrow copies and return them. The library can print its catalog. This time you will also add two features: searching the library for an item, and reserving a book.
 
@@ -55,8 +55,8 @@ The source this assignment is based on:
 
 TypeScript's type system:
 
-- **[TypeScript Handbook — Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)**. TypeScript is *structurally* typed: any object with the right shape fits an interface, even if it never says `implements`. Compare this with Python's ABCs in assignment 01.
-- **[TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)**. A preview of project 05b.
+- **[TypeScript Handbook — Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)**. TypeScript is *structurally* typed: any object with the right shape fits an interface, even if it never says `implements`. Compare this with Python's ABCs in assignment OOP01.
+- **[TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)**. A preview of project DS04.
 
 What runs underneath:
 
@@ -66,7 +66,7 @@ What runs underneath:
 
 Design:
 
-- **[Refactoring Guru — Design Patterns catalog](https://refactoring.guru/design-patterns)**. The other classic patterns, with TypeScript examples. A preview of project 18.
+- **[Refactoring Guru — Design Patterns catalog](https://refactoring.guru/design-patterns)**. The other classic patterns, with TypeScript examples. A preview of project ARCH01.
 
 ---
 
@@ -103,7 +103,7 @@ There is nothing to test in this part.
 
 This part practices **interfaces**.
 
-An interface is a contract. It says what an object can do, without saying how. In Assignment 01, "can be borrowed" was part of the base class. Here you will separate it into its own contract, so that code which only needs to borrow and return things doesn't have to know anything about books or DVDs.
+An interface is a contract. It says what an object can do, without saying how. In Assignment OOP01, "can be borrowed" was part of the base class. Here you will separate it into its own contract, so that code which only needs to borrow and return things doesn't have to know anything about books or DVDs.
 
 Define the interface **`Borrowable`**, for anything that can be checked out and returned:
 
@@ -230,7 +230,7 @@ Add these methods to **`Library`**:
 - **`returnItem(memberId, itemId)`**: the member returns the item.
 - **`printCatalog()`** prints every item's `describe()`, one per line.
 
-The rules are the same as in Assignment 01:
+The rules are the same as in Assignment OOP01:
 
 - An unknown member or item ID throws `NotFoundError`.
 - Returning an item the member doesn't hold throws `InvalidReturnError`.

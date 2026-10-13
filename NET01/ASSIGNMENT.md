@@ -1,4 +1,4 @@
-# Assignment 15 — Key-Value Server (Python)
+# Assignment NET01 — Key-Value Server (Python)
 
 **Topics:** TCP sockets, clients and servers, TCP as a byte stream, message framing, designing a protocol, serving many clients with threads and with asyncio, network errors and timeouts, HTTP as text over TCP
 
@@ -43,7 +43,7 @@ The goal here is to know the vocabulary and the shape of each problem before you
 5. **[Python docs — OS exceptions](https://docs.python.org/3/library/exceptions.html#os-exceptions)**
    `ConnectionError` and its subclasses (`ConnectionRefusedError`, `ConnectionResetError`, `BrokenPipeError`), and `TimeoutError`: what each one means on a network.
    *Part 6.*
-6. **Assignment 12's reading on locks**, for the shared dictionary.
+6. **Assignment CONC01's reading on locks**, for the shared dictionary.
    *Part 4.*
 7. **[Python docs — asyncio Streams](https://docs.python.org/3/library/asyncio-stream.html)**
    [`start_server`](https://docs.python.org/3/library/asyncio-stream.html#asyncio.start_server), [`StreamReader`](https://docs.python.org/3/library/asyncio-stream.html#streamreader) and [`StreamWriter`](https://docs.python.org/3/library/asyncio-stream.html#streamwriter): the asyncio version of the same socket calls.
@@ -62,7 +62,7 @@ The sources this assignment is based on:
 How TCP works:
 
 - **[Ilya Grigorik — High Performance Browser Networking, ch. 2 "Building Blocks of TCP"](https://hpbn.co/building-blocks-of-tcp/)** (free online). The three-way handshake, flow control, slow start and head-of-line blocking: what happens under your `connect` and `sendall`.
-- **[Beej's Guide to Network Programming](https://beej.us/guide/bgnet/html/)**. The C socket API that Python's `socket` module wraps. A preview of project 16.
+- **[Beej's Guide to Network Programming](https://beej.us/guide/bgnet/html/)**. The C socket API that Python's `socket` module wraps. A preview of project NET02.
 
 Serving many clients:
 
@@ -199,7 +199,7 @@ Your server handles one client at a time. While it waits for one client to send 
 
 The classic fix is a **thread per client**. The main thread only `accept`s connections. For each new connection it starts a thread that handles that client until it disconnects.
 
-All the client threads share one dictionary. As you saw in the previous stage, shared state across threads needs a lock.
+All the client threads share one dictionary. As you saw in the concurrency project, shared state across threads needs a lock.
 
 Write **`ThreadedKVServer(host, port)`**, with the same interface as `KVServer`, that serves each client in its own thread.
 

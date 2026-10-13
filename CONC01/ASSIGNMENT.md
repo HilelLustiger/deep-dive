@@ -1,4 +1,4 @@
-# Assignment 12 — Concurrent Bank (Python)
+# Assignment CONC01 — Concurrent Bank (Python)
 
 **Topics:** threads, race conditions, mutual exclusion with locks, deadlock and lock ordering, producer–consumer with a bounded queue, semaphores, the GIL, `ThreadPoolExecutor` and `ProcessPoolExecutor`
 
@@ -53,7 +53,7 @@ The goal here is to know the vocabulary and the shape of each problem before you
    What `maxsize` does, when `put` and `get` block, and how `task_done()` and `join()` work together.
    *Part 5.*
 8. **[Real Python — Speed Up Your Python Program With Concurrency](https://realpython.com/python-concurrency/)**
-   I/O-bound vs. CPU-bound work, what the GIL is, and why threads speed up the first but not the second while multiprocessing speeds up both. It also covers asyncio, which you already know from project 11. Compare it with threads.
+   I/O-bound vs. CPU-bound work, what the GIL is, and why threads speed up the first but not the second while multiprocessing speeds up both. It also covers asyncio, which you already know from project ASYNC02. Compare it with threads.
    *Part 7.*
 9. **[Python docs — `concurrent.futures`](https://docs.python.org/3/library/concurrent.futures.html#executor-objects)**: Executor Objects and ProcessPoolExecutor
    `Executor.map`, and the rules a function must follow to be sent to another process.
@@ -73,7 +73,7 @@ Under the hood:
 - **[OSTEP, ch. 30 — Condition Variables](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf)**. Building a bounded buffer yourself, which is roughly what `queue.Queue` does internally with `threading.Condition`. Also covers why the check must be in a `while` loop and not an `if`.
 - **[OSTEP, ch. 31 — Semaphores](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf)**. The semaphore as a general primitive that can act as a lock, a signal or a counter. Section 31.7 "Thread Throttling" is exactly Part 6.
 - **[OSTEP, ch. 32 — Common Concurrency Problems](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)**, section 32.2. The non-deadlock bugs, atomicity violations and order violations, which a study of real software found to be the most common concurrency bugs.
-- **[OSTEP, ch. 27 — Thread API](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)**. The same concepts in C with pthreads. A preview of project 14.
+- **[OSTEP, ch. 27 — Thread API](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)**. The same concepts in C with pthreads. A preview of project CONC03.
 
 Python-specific:
 

@@ -1,4 +1,4 @@
-# Assignment 11 — Async Site Checker (Python)
+# Assignment ASYNC02 — Async Site Checker (Python)
 
 **Topics:** coroutines, the event loop, tasks, `gather` vs. `TaskGroup`, timeouts and cancellation, `as_completed` and `wait`, async context managers, async generators, limiting concurrency, blocking code in async programs
 
@@ -76,7 +76,7 @@ How it works underneath:
 - **[Python docs — A Conceptual Overview of asyncio](https://docs.python.org/3/howto/a-conceptual-overview-of-asyncio.html#a-conceptual-overview-part-2-the-nuts-and-bolts)**, part 2 "the nuts and bolts". Futures, how a coroutine really pauses, and a homemade `asyncio.sleep`.
 - **[Brett Cannon — How the heck does async/await work in Python 3.5?](https://snarky.ca/how-the-heck-does-async-await-work-in-python-3-5/)**. The path from generators to coroutines, and how an event loop drives them.
 - **[OSTEP, ch. 33 — Event-based Concurrency](https://pages.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)**. What an event loop is at the OS level (`select`/`poll`), why it needs no locks, and section 33.5, "A Problem: Blocking System Calls", which is Part 7 in C.
-- **[Python docs — `selectors`](https://docs.python.org/3/library/selectors.html)**. The layer asyncio's event loop is built on. A preview of project 15.
+- **[Python docs — `selectors`](https://docs.python.org/3/library/selectors.html)**. The layer asyncio's event loop is built on. A preview of project NET01.
 - **[Python docs — Event Loop](https://docs.python.org/3/library/asyncio-eventloop.html)**. The low-level API that `asyncio.run` hides from you.
 - ***Fluent Python*, 2nd ed.** by Luciano Ramalho, ch. 21 "Asynchronous Programming" (not free).
 

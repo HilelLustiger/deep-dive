@@ -1,4 +1,4 @@
-# Assignment 01 — Library System (Python)
+# Assignment OOP01 — Library System (Python)
 
 **Topics:** classes and constructors, encapsulation, inheritance, polymorphism, composition, abstract classes
 
@@ -66,7 +66,7 @@ Python's object model:
 Design:
 
 - **[Brandon Rhodes — The Composition Over Inheritance Principle](https://python-patterns.guide/gang-of-four/composition-over-inheritance/)**. The Gang of Four principle, shown with Python examples: why a class explosion from subclassing is fixed by composing objects.
-- **[PEP 544 — Protocols: Structural subtyping](https://peps.python.org/pep-0544/)**. Interfaces by shape instead of by inheritance (`typing.Protocol`). This is the bridge to TypeScript's interfaces in assignment 02.
+- **[PEP 544 — Protocols: Structural subtyping](https://peps.python.org/pep-0544/)**. Interfaces by shape instead of by inheritance (`typing.Protocol`). This is the bridge to TypeScript's interfaces in assignment OOP02.
 
 ---
 

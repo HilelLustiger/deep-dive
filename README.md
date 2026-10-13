@@ -1,11 +1,11 @@
 # Deep Dive
 
-A structured curriculum of small projects in software fundamentals: object-oriented design, data structures, memory management, asynchronous programming, concurrency, networking, databases and security.
+A structured curriculum of small projects in software fundamentals: object-oriented design, data structures, memory management, asynchronous programming, concurrency, networking, databases, security, and containers and CI/CD.
 
-Each project is a focused assignment built from an established textbook or university course, implemented from scratch, and verified by tests.
+Each project is a focused assignment built from an established textbook, university course or official documentation, implemented from scratch, and verified by tests.
 
 **Languages:** Python · TypeScript · C++
-**Current focus:** the Python track (stages 1, 5, 6 and 7)
+**Current focus:** the Python track (object-oriented programming, asynchronous programming, concurrency and networking)
 
 ## How each project works
 
@@ -14,91 +14,91 @@ Every project lives in its own folder with two documents:
 - **`ASSIGNMENT.md`**: the task, written before any code, in the style of a university assignment. It states what to build, the required interfaces, and the tests that define "done". A **Reading** section lists what to read *before you start*, each source tied to the parts it prepares for, and what to read for *going deeper*.
 - **`README.md`**: the source the assignment is based on, what the project covers, and, once complete, what I learned and one design decision I made along the way.
 
-A project is complete only when every requirement in its assignment is backed by a passing test.
+A project is complete only when every requirement in its assignment is backed by a passing test. Where a requirement can't be tested in code, such as a cached image layer or a blocked pull request, it is backed by recorded command output instead.
 
 ## Projects
 
-### 1. Object-Oriented Programming
+### Object-Oriented Programming
 
-- **[01 · Library System](01-library-system-python/)** — Python · *complete*  
+- **[OOP01 · Library System](OOP01/)** — Python · *complete*  
   Classes, encapsulation, inheritance, polymorphism, composition, abstract classes
-- **[02 · Library System](02-library-system-ts/)** — TypeScript  
+- **[OOP02 · Library System](OOP02/)** — TypeScript  
   Access modifiers, abstract classes vs. interfaces, static members, method overloading
 
-### 2. Data Structures From Scratch
+### Data Structures From Scratch
 
-- **03 · Linked List** — Python  
+- **DS01 · Linked List** — Python  
   Nodes and pointers, insert/delete/traverse
-- **04 · Hash Map** — Python  
+- **DS02 · Hash Map** — Python  
   Hashing, collisions, resizing
-- **05 · BST** — Python  
+- **DS03 · BST** — Python  
   Ordered tree insert/search/delete
-- **05b · Generic Linked List** — TypeScript  
+- **DS04 · Generic Linked List** — TypeScript  
   Generics
 
-### 3. Recursion
+### Recursion
 
-- **06 · File System Explorer** — Python  
+- **REC01 · File System Explorer** — Python  
   Recursive tree traversal
-- **07 · Maze Solver** — Python  
+- **REC02 · Maze Solver** — Python  
   Backtracking
 
-### 4. Manual Memory Management
+### Manual Memory Management
 
-- **08 · Dynamic Array** — C++  
+- **MEM01 · Dynamic Array** — C++  
   new/delete, growth, copy semantics
-- **09 · Smart Pointer** — C++  
+- **MEM02 · Smart Pointer** — C++  
   RAII, ownership, reference counting
 
-### 5. Asynchronous Programming
+### Asynchronous Programming
 
-- **10 · Promise Chain** — TypeScript  
+- **ASYNC01 · Promise Chain** — TypeScript  
   Promises, async/await, error propagation
-- **[11 · Async Site Checker](11-async-site-checker-python/)** — Python · *complete*  
+- **[ASYNC02 · Async Site Checker](ASYNC02/)** — Python · *complete*  
   Coroutines, tasks, `gather` vs. `TaskGroup`, timeouts and cancellation, concurrency limits, blocking code
 
-### 6. Concurrency
+### Concurrency
 
-- **[12 · Concurrent Bank](12-concurrent-bank-python/)** — Python · *in progress*  
+- **[CONC01 · Concurrent Bank](CONC01/)** — Python · *in progress*  
   Race conditions, locks, deadlock, producer–consumer, semaphores, GIL, threads vs. processes
-- **13 · Worker Threads** — TypeScript  
+- **CONC02 · Worker Threads** — TypeScript  
   Parallelism in Node
-- **14 · Threads + Mutex** — C++  
+- **CONC03 · Threads + Mutex** — C++  
   std::thread, mutexes
 
-### 7. Networking
+### Networking
 
-- **[15 · Key-Value Server](15-key-value-server-python/)** — Python  
+- **[NET01 · Key-Value Server](NET01/)** — Python  
   TCP sockets, framing, protocol design, threaded and asyncio servers, network errors, HTTP
-- **16 · TCP Echo Server/Client** — C++  
+- **NET02 · TCP Echo Server/Client** — C++  
   Low-level sockets
 
-### 8. Databases
+### Databases
 
-- **17 · Transactions & Indexing** — Python  
+- **DB01 · Transactions & Indexing** — Python  
   ACID transactions, indexes
 
-### 9. Software Design & Architecture
+### Software Design & Architecture
 
-- **18 · Notification System** — Python/TS  
+- **ARCH01 · Notification System** — Python/TS  
   Design patterns
 
-### 10. Security Fundamentals
+### Security Fundamentals
 
-- **19 · Auth Basics** — Python  
+- **SEC01 · Auth Basics** — Python  
   Password hashing, sessions
-- **20 · XSS Demo** — TypeScript  
+- **SEC02 · XSS Demo** — TypeScript  
   Injection and escaping
-- **21 · Buffer Overflow Demo** — C++  
+- **SEC03 · Buffer Overflow Demo** — C++  
   Memory-safety bugs
 
-## Running a project
+### DevOps
 
-Each project is self-contained. For a Python project:
-
-```
-cd 01-library-system-python
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements-dev.txt
-python -m pytest
-```
+- **[OPS01 · Containers and CI/CD](OPS01/)** — Python · Docker · GitHub Actions  
+  Images and layers, build cache, Compose networking and volumes, healthchecks, CI pipelines, service containers, publishing to a registry
+- **OPS02 · Deploying to a Server** — Docker · GitHub Actions  
+  Linux server over SSH, reverse proxy and TLS, deploying by image SHA, rollback
+- **OPS03 · Observability** — Python · Prometheus · Grafana  
+  Structured logs, metrics, liveness vs. readiness, alerting
+- **OPS04 · Kubernetes Basics** — Kubernetes  
+  Deployments, Services, ConfigMaps and Secrets, probes, rolling updates
