@@ -59,7 +59,7 @@ A project is complete only when every requirement in its assignment is backed by
 
 ### Concurrency
 
-- **[CONC01 · Concurrent Bank](CONC01/)** — Python · *in progress*  
+- **[CONC01 · Concurrent Bank](CONC01/)** — Python · *complete*  
   Race conditions, locks, deadlock, producer–consumer, semaphores, GIL, threads vs. processes
 - **CONC02 · Worker Threads** — TypeScript  
   Parallelism in Node
