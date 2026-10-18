@@ -1,6 +1,6 @@
 # Deep Dive
 
-A structured curriculum of small projects in software fundamentals: object-oriented design, data structures, memory management, asynchronous programming, concurrency, networking, databases, security, and containers and CI/CD.
+A structured curriculum of small projects in software fundamentals: object-oriented design, data structures, memory management, asynchronous programming, concurrency, networking, databases, security, containers and CI/CD, and AI agents.
 
 Each project is a focused assignment built from an established textbook, university course or official documentation, implemented from scratch, and verified by tests.
 
@@ -102,3 +102,8 @@ A project is complete only when every requirement in its assignment is backed by
   Structured logs, metrics, liveness vs. readiness, alerting
 - **OPS04 · Kubernetes Basics** — Python · TypeScript · Kubernetes  
   Deployments, Services, ConfigMaps and Secrets, probes, rolling updates
+
+### AI Agents
+
+- **[AGENT01 · Personal Assistant Agent](AGENT01/)** — Python · LangGraph · *draft*  
+  The agent loop, tool calling, conditional routing, checkpointers and durable state, human-in-the-loop interrupts, subgraphs and multi-agent composition, refactoring a fine-grained graph into a coarse one
