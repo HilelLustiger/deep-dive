@@ -4,8 +4,8 @@ A structured curriculum of small projects in software fundamentals: object-orien
 
 Each project is a focused assignment built from an established textbook, university course or official documentation, implemented from scratch, and verified by tests.
 
-**Languages:** Python · TypeScript · C++ · Bash
-**Current focus:** the Python track (object-oriented programming, asynchronous programming, concurrency and networking)
+**Languages:** Python · TypeScript · C++ · Java · Bash
+**Current focus:** branching out from Python into TypeScript, C++ and Java
 
 ## How each project works
 
@@ -20,27 +20,27 @@ A project is complete only when every requirement in its assignment is backed by
 
 ### Object-Oriented Programming
 
-- **[OOP01 · Library System](OOP01/)** — Python · *complete*  
+- **[OOP01 · Library System](OOP01/)** — Python · *<ins>complete</ins>*  
   Classes, encapsulation, inheritance, polymorphism, composition, abstract classes
 - **[OOP02 · Library System](OOP02/)** — TypeScript  
   Access modifiers, abstract classes vs. interfaces, static members, method overloading
 
 ### Data Structures From Scratch
 
-- **DS01 · Linked List** — Python  
-  Nodes and pointers, insert/delete/traverse
+- **DS01 · Linked List** — C++  
+  Nodes and raw pointers, insert/delete/traverse, freeing nodes in the destructor
 - **DS02 · Hash Map** — Python  
-  Hashing, collisions, resizing
-- **DS03 · BST** — Python  
-  Ordered tree insert/search/delete
-- **DS04 · Generic Linked List** — TypeScript  
-  Generics
+  Hashing, collisions, resizing, the mapping protocol (`__getitem__`, `__setitem__`)
+- **DS03 · BST** — TypeScript  
+  Ordered tree insert/search/delete, generics and comparator functions
+- **DS04 · Priority Queue** — Java  
+  Binary heap in an array, sift-up and sift-down, bounded generics, `Iterable`
 
 ### Recursion
 
 - **REC01 · File System Explorer** — Python  
   Recursive tree traversal
-- **REC02 · Maze Solver** — Python  
+- **REC02 · Maze Solver** — TypeScript  
   Backtracking
 
 ### Manual Memory Management
@@ -54,12 +54,12 @@ A project is complete only when every requirement in its assignment is backed by
 
 - **ASYNC01 · Promise Chain** — TypeScript  
   Promises, async/await, error propagation
-- **[ASYNC02 · Async Site Checker](ASYNC02/)** — Python · *complete*  
+- **[ASYNC02 · Async Site Checker](ASYNC02/)** — Python · *<ins>complete</ins>*  
   Coroutines, tasks, `gather` vs. `TaskGroup`, timeouts and cancellation, concurrency limits, blocking code
 
 ### Concurrency
 
-- **[CONC01 · Concurrent Bank](CONC01/)** — Python · *complete*  
+- **[CONC01 · Concurrent Bank](CONC01/)** — Python · *<ins>complete</ins>*  
   Race conditions, locks, deadlock, producer–consumer, semaphores, GIL, threads vs. processes
 - **CONC02 · Worker Threads** — TypeScript  
   Parallelism in Node
