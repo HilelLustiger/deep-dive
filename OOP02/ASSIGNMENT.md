@@ -56,7 +56,7 @@ The source this assignment is based on:
 TypeScript's type system:
 
 - **[TypeScript Handbook — Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)**. TypeScript is *structurally* typed: any object with the right shape fits an interface, even if it never says `implements`. Compare this with Python's ABCs in assignment OOP01.
-- **[TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)**. A preview of project DS04.
+- **[TypeScript Handbook — Generics](https://www.typescriptlang.org/docs/handbook/2/generics.html)**. A preview of project DS03.
 
 What runs underneath:
 
