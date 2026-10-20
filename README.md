@@ -22,7 +22,7 @@ A project is complete only when every requirement in its assignment is backed by
 
 - **[OOP01 · Library System](OOP01/)** — Python · *<ins>complete</ins>*  
   Classes, encapsulation, inheritance, polymorphism, composition, abstract classes
-- **[OOP02 · Library System](OOP02/)** — TypeScript  
+- **[OOP02 · Library System](OOP02/)** — TypeScript · *<ins>complete</ins>*  
   Access modifiers, abstract classes vs. interfaces, static members, method overloading
 
 ### Data Structures From Scratch
