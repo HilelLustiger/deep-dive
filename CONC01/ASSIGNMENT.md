@@ -395,15 +395,6 @@ Record the timings in `README.md`.
 
 ---
 
-## Wrap up
-
-Complete `README.md` in this folder with short sections:
-
-- **What I learned**: a few sentences.
-- **Why the lock covers check and update together**: your answer from Part 3.
-- **Threads or processes**: the timings from Part 7, and in your own words, when you'd use each.
-- **A design decision**: one choice you made that the assignment didn't dictate, and why.
-
 ## Running the tests
 
 From this folder, with the virtual environment active:
@@ -411,10 +402,3 @@ From this folder, with the virtual environment active:
 ```
 python -m pytest
 ```
-
-## Done when
-
-- [ ] Parts 0–7 are complete
-- [ ] Every "Test that" item has a passing test
-- [ ] The tests pass on several runs in a row, not just once
-- [ ] `README.md` is completed
