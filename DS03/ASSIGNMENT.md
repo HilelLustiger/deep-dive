@@ -6,7 +6,9 @@
 
 In this assignment you will build a **binary search tree** (BST): a tree of nodes where every node holds a key, every key in its left subtree is smaller, and every key in its right subtree is larger. That one rule is what makes the tree useful. To find a key you start at the root and go left or right at every node, so you never look at most of the tree.
 
-You will use the tree as an **ordered symbol table**, a map from keys to values that also knows the order of its keys. A hash map, which is project DS02, answers "what is the value of this key?". An ordered symbol table also answers "what is the smallest key?", "what is the largest key that is at most 45?", "how many keys are smaller than this one?" and "what are all the keys between 100 and 200?". Databases use trees for their indexes for exactly this reason.
+You will use the tree to implement an **ordered symbol table**. An ordered symbol table is not a data structure but an **abstract data type** (ADT): a list of operations and what each one must return, without saying how they are built. It's the same relationship as between an interface and a class that implements it. The ADT is the interface, and the BST is one data structure that implements it. A sorted array is another, with different costs.
+
+A **symbol table** is the ADT for a map from keys to values: put a value under a key, and get it back by its key. A hash map, which is project DS02, implements it. An *ordered* symbol table adds operations that depend on the order of the keys: "what is the smallest key?", "what is the largest key that is at most 45?", "how many keys are smaller than this one?" and "what are all the keys between 100 and 200?". A hash map keeps its keys in no particular order, so it can only answer these by looking at every key. A BST keeps them in order, so it can answer each one by walking down a single path. Database indexes are trees for exactly this reason.
 
 The tree is **generic**: it works for any key type and any value type. It doesn't know how to compare keys of a type it has never seen, so whoever creates the tree passes in a **comparator**, a function that says which of two keys comes first.
 
