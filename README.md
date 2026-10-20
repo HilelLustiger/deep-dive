@@ -1,6 +1,6 @@
 # Deep Dive
 
-A structured curriculum of small projects in software fundamentals: object-oriented design, data structures, memory management, asynchronous programming, concurrency, networking, databases, security, containers and CI/CD, and AI agents.
+A structured curriculum of small projects in software fundamentals: object-oriented design, data structures, memory management, asynchronous programming, concurrency, networking, databases, security, containers and CI/CD, AI agents, and developer tooling.
 
 Each project is a focused assignment built from an established textbook, university course or official documentation, implemented from scratch, and verified by tests.
 
@@ -28,7 +28,7 @@ Every project lives in its own folder with two documents:
   Nodes and raw pointers, insert/delete/traverse, freeing nodes in the destructor
 - **DS02 · Hash Map** — Python  
   Hashing, collisions, resizing, the mapping protocol (`__getitem__`, `__setitem__`)
-- **DS03 · BST** — TypeScript  
+- **[DS03 · Binary Search Tree](DS03/)** — TypeScript  
   Ordered tree insert/search/delete, generics and comparator functions
 - **DS04 · Priority Queue** — Java  
   Binary heap in an array, sift-up and sift-down, bounded generics, `Iterable`
@@ -72,8 +72,14 @@ Every project lives in its own folder with two documents:
 
 ### Databases
 
-- **DB01 · Transactions & Indexing** — Python  
-  ACID transactions, indexes
+- **DB01 · Transactions & Isolation** — Python · PostgreSQL  
+  ACID transactions, isolation levels, dirty reads, lost updates and write skew, locking vs. MVCC
+- **DB02 · Indexes & Query Plans** — PostgreSQL  
+  B-tree indexes, reading `EXPLAIN` and `EXPLAIN ANALYZE`, when an index isn't used, composite and covering indexes
+- **DB03 · Schema Design** — PostgreSQL  
+  Normalization, keys and foreign keys, constraints, when to denormalize on purpose
+- **DB04 · Databases from Application Code** — TypeScript · PostgreSQL  
+  ORMs and the N+1 problem, connection pools, schema migrations
 
 ### Software Design & Architecture
 
@@ -104,3 +110,18 @@ Every project lives in its own folder with two documents:
 
 - **[AGENT01 · Personal Assistant Agent](AGENT01/)** — Python · LangGraph · *draft*  
   The agent loop, tool calling, conditional routing, checkpointers and durable state, human-in-the-loop interrupts, subgraphs and multi-agent composition, refactoring a fine-grained graph into a coarse one
+- **AGENT02 · Retrieval-Augmented Generation** — Python · PostgreSQL  
+  Embeddings, chunking documents, vector search, grounding answers in retrieved sources
+- **AGENT03 · Agent Evals** — Python  
+  Test sets for non-deterministic output, graders and LLM-as-judge, tracking regressions
+- **AGENT04 · MCP Server** — TypeScript  
+  The Model Context Protocol, exposing tools and resources, connecting a server to any agent
+
+### Tooling
+
+- **TOOL01 · C++ Build and Test Setup** — C++ · CMake  
+  Headers and source files, compiling and linking, CMake, GoogleTest, compiler warnings, sanitizers
+- **TOOL02 · Git Internals** — Git  
+  Objects, commits and refs, the index, branches as pointers, rebase, reset and reflog, rewriting history
+- **TOOL03 · Debugging** — Python · TypeScript · C++  
+  Breakpoints, stepping, inspecting variables and the call stack, the VS Code debugger
