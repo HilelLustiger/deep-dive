@@ -106,15 +106,20 @@ Every project lives in its own folder with two documents:
 - **OPS04 · Kubernetes Basics** — Python · TypeScript · Kubernetes  
   Deployments, Services, ConfigMaps and Secrets, probes, rolling updates
 
+### LLM Fundamentals
+
+- **LLM01 · Talking to an LLM** — TypeScript  
+  Raw HTTP vs. SDK, messages and roles, system prompts, tokens and context windows, sampling parameters, stop reasons, streaming, errors and retries, structured output, conversation history
+- **LLM02 · Embeddings and Retrieval** — TypeScript · MongoDB Atlas  
+  Embeddings and cosine similarity, brute-force vs. indexed search, vector indexes, chunking, retrieval evals (recall@k), context injection (RAG), long-term memory
+
 ### AI Agents
 
-- **[AGENT01 · Personal Assistant Agent](AGENT01/)** — Python · LangGraph · *draft*  
-  The agent loop, tool calling, conditional routing, checkpointers and durable state, human-in-the-loop interrupts, subgraphs and multi-agent composition, refactoring a fine-grained graph into a coarse one
-- **AGENT02 · Retrieval-Augmented Generation** — Python · PostgreSQL  
-  Embeddings, chunking documents, vector search, grounding answers in retrieved sources
-- **AGENT03 · Agent Evals** — Python  
-  Test sets for non-deterministic output, graders and LLM-as-judge, tracking regressions
-- **AGENT04 · MCP Server** — TypeScript  
+- **AGENT01 · Agent From Scratch** — TypeScript  
+  Tool definitions, a hand-written agent loop, tool errors, workflows vs. agents, memory as tools, transcript logging, task-success evals
+- **[AGENT02 · Personal Assistant Agent](AGENT02/)** — Python · LangGraph · *draft*  
+  The agent loop as a graph, conditional routing, checkpointers and durable state, human-in-the-loop interrupts, long-term memory stores, subgraphs and multi-agent composition, refactoring a fine-grained graph into a coarse one
+- **AGENT03 · MCP Server** — TypeScript  
   The Model Context Protocol, exposing tools and resources, connecting a server to any agent
 
 ### Tooling

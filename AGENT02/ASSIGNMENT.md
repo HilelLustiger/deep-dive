@@ -1,8 +1,10 @@
-# Assignment AGENT01 — Personal Assistant Agent (Python · LangGraph)
+# Assignment AGENT02 — Personal Assistant Agent (Python · LangGraph)
 
 > **Draft.** This is an outline of the parts, not the full assignment. Each part still needs its required interfaces, tests, thresholds and "Done when" list before work on it starts.
 
-**Topics:** the agent loop, tool calling, graphs (nodes, edges, state), conditional routing, checkpointers and durable state, threads, human-in-the-loop interrupts, subgraphs and multi-agent composition, fine-grained vs. coarse graph design
+**Topics:** the agent loop as a graph, graphs (nodes, edges, state), conditional routing, checkpointers and durable state, threads, human-in-the-loop interrupts, long-term memory stores, subgraphs and multi-agent composition, fine-grained vs. coarse graph design
+
+**Before this:** AGENT01 (Agent From Scratch). Several parts here rebuild something you already wrote by hand there, and the comparison is the point.
 
 ## Introduction
 
@@ -40,14 +42,16 @@ Tests must not call a real LLM. Use a fake chat model from `langchain_core` that
    *All parts, Part 7 especially.*
 2. **Anthropic docs — Tool use overview**
    What a tool definition is, what a `tool_use` block looks like, and how its result goes back to the model.
-   *Part 2.*
+   *Part 1.*
 3. **LangGraph docs — Graph API concepts** (state, nodes, edges, reducers)
-   *Parts 1 and 3.*
+   *Parts 1 and 2.*
 4. **LangGraph docs — Persistence** (checkpointers, threads)
-   *Part 4.*
+   *Part 3.*
 5. **LangGraph docs — Human-in-the-loop / interrupts**
+   *Part 4.*
+6. **LangGraph docs — Memory / stores** (long-term memory, semantic search)
    *Part 5.*
-6. **LangGraph docs — Subgraphs and multi-agent systems**
+7. **LangGraph docs — Subgraphs and multi-agent systems**
    *Part 6.*
 
 ### Going deeper
@@ -61,25 +65,25 @@ Tests must not call a real LLM. Use a fake chat model from `langchain_core` that
 
 Virtual environment, dependencies (`langgraph`, `langchain-anthropic`, `pytest`), the API key read from the environment, and a `tools.py` with the assistant's tools working as plain functions over a local JSON store: `add_note`, `search_notes`, `add_todo`, `list_todos`, `delete_todo`. Tested without any LLM.
 
-## Part 1 — A graph with one node
+## Part 1 — The tool-calling loop as a graph
 
-A graph with a single node that calls the model once and returns its answer. Then write the same thing as a plain function. Compare them in `LESSONS_LEARNED.md`: at this size the framework gives you nothing. That is the point of this part.
+A model node and a tool node, connected in a loop: the model asks for tools, the tool node runs them and appends the results, and control returns to the model until it answers without a tool call. A hard limit on iterations. You wrote this loop by hand in AGENT01; compare the two in `LESSONS_LEARNED.md`.
 
-## Part 2 — The tool-calling loop
-
-A model node and a tool node, connected in a loop: the model asks for tools, the tool node runs them and appends the results, and control returns to the model until it answers without a tool call. A hard limit on iterations. This is the core of every agent.
-
-## Part 3 — Conditional routing, the fine-grained way
+## Part 2 — Conditional routing, the fine-grained way
 
 Split the assistant into explicit nodes for each step (classify the request, route to notes or to-dos, call tools, format the answer) connected by conditional edges. Record the node and edge count after each capability you add: this is the graph you will later throw away.
 
-## Part 4 — Checkpointer and durable state
+## Part 3 — Checkpointer and durable state
 
-Add a SQLite checkpointer and conversation threads. Conversations survive a process restart, two threads don't see each other's history, and you can inspect and rewind a thread's past states. This is how agent "memory" actually works: saved state, not something inside the model.
+Add a SQLite checkpointer and conversation threads. Conversations survive a process restart, two threads don't see each other's history, and you can inspect and rewind a thread's past states. Compare with the in-process conversation history from LLM01: what does a checkpointer add?
 
-## Part 5 — Human approval with interrupts
+## Part 4 — Human approval with interrupts
 
-Before any destructive tool (`delete_todo`) runs, the graph pauses and asks for approval. An approval resumes it, a rejection tells the model the action was refused. The pause must survive a restart, which only works because of Part 4.
+Before any destructive tool (`delete_todo`) runs, the graph pauses and asks for approval. An approval resumes it, a rejection tells the model the action was refused. The pause must survive a restart, which only works because of Part 3.
+
+## Part 5 — Long-term memory with a store
+
+Add a LangGraph store with semantic search so the assistant remembers facts across threads, not only within one. Compare with the memory you built on MongoDB in LLM02: what the store does for you, and what you can no longer see.
 
 ## Part 6 — A second agent as a subgraph
 
@@ -87,7 +91,7 @@ Move to-do handling into its own agent, built as a subgraph, and have the main a
 
 ## Part 7 — The refactor: from fine-grained to coarse
 
-Rebuild the assistant as `assistant_graph`: as few nodes as possible (most likely: model, tools, approval), keeping every behaviour from Parts 2–6. The same behaviour tests from Parts 2–6 must pass against both graphs. In `README.md`, compare the two graphs: what each node in the fine-grained graph turned into, what the framework simplified, and where explicit nodes were actually worth keeping.
+Rebuild the assistant as `assistant_graph`: as few nodes as possible (most likely: model, tools, approval), keeping every behaviour from Parts 1–6. The same behaviour tests from Parts 1–6 must pass against both graphs. In `README.md`, compare the two graphs: what each node in the fine-grained graph turned into, what the framework simplified, and where explicit nodes were actually worth keeping.
 
 ## Review questions
 
