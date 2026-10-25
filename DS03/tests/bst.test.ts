@@ -54,11 +54,17 @@ test("the comparator decides which keys are the same key", () => {
     expect(tree.get({ name: "standup", day: 4 })).toBeUndefined();
 });
 
-test("min, max, floor and ceiling find the right keys", () => {
+// The tree from Part 3, used again in Part 4.
+function buildSevenKeyTree(): BST<number, number> {
     const tree: BST<number, number> = new BST(compareNumbers);
     const keys = [50, 30, 70, 20, 40, 60, 80];
 
     keys.forEach(key => tree.put(key, key));
+    return tree;
+}
+
+test("min, max, floor and ceiling find the right keys", () => {
+    const tree = buildSevenKeyTree();
 
     expect(tree.min()).toBe(20);
     expect(tree.max()).toBe(80);
@@ -82,4 +88,29 @@ test("a reversed comparator flips the order", () => {
 
     nums.forEach(num => tree.put(num, num));
     expect(tree.min()).toBe(3);
+});
+
+test("rank counts the keys smaller than the given key", () => {
+    const tree = buildSevenKeyTree();
+
+    expect(tree.rank(20)).toBe(0);
+    expect(tree.rank(50)).toBe(3);
+    expect(tree.rank(45)).toBe(3);
+    expect(tree.rank(100)).toBe(7);
+});
+
+test("select returns the key with the given rank", () => {
+    const tree = buildSevenKeyTree();
+
+    expect(tree.select(0)).toBe(20);
+    for (let i = 0; i < tree.size(); i++) {
+        expect(tree.rank(tree.select(i))).toBe(i);
+    }
+});
+
+test("select throws RangeError for a rank outside the tree", () => {
+    const tree = buildSevenKeyTree();
+
+    expect(() => tree.select(7)).toThrow(RangeError);
+    expect(() => tree.select(-1)).toThrow(RangeError);
 });

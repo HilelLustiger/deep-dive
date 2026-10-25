@@ -61,6 +61,16 @@ export class BST<K, V> {
         return this.getCeilNode(this.root, key)?.key;
     }
 
+    rank(key: K): number {
+        return this.getRank(this.root, key);
+    }
+
+    select(k: number): K {
+        if (!Number.isInteger(k) || k < 0 || k > this.size() - 1) {
+            throw new RangeError();
+        }
+        return this.selectNode(this.root, k)!.key;
+    }
 
     // - - - helpers - - -
 
@@ -168,6 +178,38 @@ export class BST<K, V> {
             const leftRes = this.getCeilNode(node.left, key);
             return leftRes? leftRes : node;
         }
+    }
+
+    private getRank(node: Node<K, V> | null, key: K): number {
+        if (!node) {
+            return 0;
+        }
+        const res = this.comparator(node.key, key);
+        if (res === 0) {
+            return sizeOf(node.left);
+        } else if (res < 0) {
+            return sizeOf(node.left) + this.getRank(node.right, key) + 1;
+        } else {
+            return this.getRank(node.left, key);
+        }
+    }
+
+    private selectNode(node: Node<K, V> | null, k: number): Node<K, V> | null {
+        if (!node) {
+            return null;
+        }
+        
+        const leftSize = sizeOf(node.left);
+        const res = k - leftSize;
+
+        if (res === 0){
+            return node;
+        } else if (res > 0) {
+            return this.selectNode(node.right, res - 1);
+        } else {
+            return this.selectNode(node.left, k);
+        }
+
     }
 }
 
