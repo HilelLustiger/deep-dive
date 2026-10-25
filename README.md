@@ -49,8 +49,8 @@ Every project lives in its own folder with two documents:
 
 ### Asynchronous Programming
 
-- **ASYNC01 · Promise Chain** — TypeScript  
-  Promises, async/await, error propagation
+- **[ASYNC01 · Promise Chain](ASYNC01/)** — TypeScript  
+  A Promise from scratch to the Promises/A+ spec, microtasks, chaining and error propagation, thenables, combinators, async/await built from generators, unhandled rejections
 - **[ASYNC02 · Async Site Checker](ASYNC02/)** — Python · *<ins>complete</ins>*  
   Coroutines, tasks, `gather` vs. `TaskGroup`, timeouts and cancellation, concurrency limits, blocking code
 
