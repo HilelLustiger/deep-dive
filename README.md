@@ -108,8 +108,8 @@ Every project lives in its own folder with two documents:
 
 ### LLM Fundamentals
 
-- **LLM01 · Talking to an LLM** — TypeScript  
-  Raw HTTP vs. SDK, messages and roles, system prompts, tokens and context windows, sampling parameters, stop reasons, streaming, errors and retries, structured output, conversation history
+- **[LLM01 · Talking to an LLM](LLM01/)** — TypeScript  
+  Raw HTTP vs. SDK, content blocks, stop reasons, tokens and cost, sampling and effort, system prompts, conversation history and the context window, streaming (SSE), errors, retries and timeouts, structured output
 - **LLM02 · Embeddings and Retrieval** — TypeScript · MongoDB Atlas  
   Embeddings and cosine similarity, brute-force vs. indexed search, vector indexes, chunking, retrieval evals (recall@k), context injection (RAG), long-term memory
 
