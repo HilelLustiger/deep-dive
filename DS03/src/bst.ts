@@ -72,6 +72,33 @@ export class BST<K, V> {
         return this.selectNode(this.root, k)!.key;
     }
 
+    keys(): K[] {
+        return this.getKeys(this.root, []);
+    }
+
+    keysBetween(lo: K, hi: K): K[] {
+        const arr: K[] = [];
+        this.getKeysBetween(this.root, lo, hi, arr);
+        return arr;
+    }
+
+    *[Symbol.iterator](): Generator<[K, V]> {
+        yield* this.helper(this.root);
+    }
+
+    deleteMin(): void {
+        this.root = this.deleteMinNode(this.root);
+    }
+
+    delete(key: K): boolean {
+        const output = this.has(key);
+        if (output) {
+            this.root = this.deleteNode(this.root, key);
+        }
+        return output;
+    }
+
+
     // - - - helpers - - -
 
     private getValue(node: Node<K, V> | null, key: K): V | undefined {
@@ -210,6 +237,93 @@ export class BST<K, V> {
             return this.selectNode(node.left, k);
         }
 
+    }
+
+    private getKeys(node: Node<K, V> | null, arr: K[]): K[] {
+        if(!node) {
+            return arr;
+        }
+
+        this.getKeys(node.left, arr);
+        arr.push(node.key);
+        this.getKeys(node.right, arr);
+        return arr;
+    }
+
+    private getKeysBetween(node: Node<K, V> | null, low: K, high: K, arr: K[]): void {
+        if(!node) {
+            return;
+        }
+
+        const lowRes = this.comparator(node.key, low);
+        const highRes = this.comparator(node.key, high);
+
+        if (lowRes < 0) { 
+            this.getKeysBetween(node.right, low, high, arr);
+        } else if (highRes > 0) {
+            this.getKeysBetween(node.left, low, high, arr);
+        } else {
+            this.getKeysBetween(node.left, low, high, arr);
+            arr.push(node.key);
+            this.getKeysBetween(node.right, low, high, arr);
+        }
+    }
+
+    private *helper(node: Node<K, V> | null): Generator<[K, V]> {
+        if (!node) {
+            return
+        }
+
+        yield* this.helper(node.left);
+        yield [node.key, node.val];
+        yield* this.helper(node.right);
+    }
+
+    private deleteMinNode(node: Node<K, V> | null): Node<K, V> | null {
+        if (!node) {
+            return null
+        }
+        
+        if (!node.left) {
+            return node.right;
+        } else { 
+            node.left = this.deleteMinNode(node.left);
+        }
+         
+        node.size = sizeOf(node.right) + sizeOf(node.left) + 1;
+        return node; 
+    }
+
+    private deleteNode(node: Node<K, V> | null, key: K): Node<K, V> | null {
+        if (!node) {
+            return null;
+        }
+
+        const res = this.comparator(node.key, key);
+        if (res === 0) {
+            if (!node.left) {
+                return node.right;
+            }
+            if (!node.right) {
+                return node.left;
+            }
+            const successor = this.getMinNode(node.right);
+            const newVal = successor!.val
+            const newKey = successor!.key
+            
+            node.right = this.deleteMinNode(node.right);
+            node.val = newVal;
+            node.key = newKey;
+
+
+        } else if (res > 0) {
+            node.left = this.deleteNode(node.left, key);
+        } else {
+            node.right = this.deleteNode(node.right, key);
+        }
+        
+        node.size = sizeOf(node.left) + sizeOf(node.right) + 1;
+        return node;
     }
 }
 

@@ -54,12 +54,12 @@ test("the comparator decides which keys are the same key", () => {
     expect(tree.get({ name: "standup", day: 4 })).toBeUndefined();
 });
 
-// The tree from Part 3, used again in Part 4.
-function buildSevenKeyTree(): BST<number, number> {
-    const tree: BST<number, number> = new BST(compareNumbers);
+// The tree from Part 3, used again in Parts 4 and 5.
+function buildSevenKeyTree(): BST<number, string> {
+    const tree: BST<number, string> = new BST(compareNumbers);
     const keys = [50, 30, 70, 20, 40, 60, 80];
 
-    keys.forEach(key => tree.put(key, key));
+    keys.forEach(key => tree.put(key, `v${key}`));
     return tree;
 }
 
@@ -113,4 +113,75 @@ test("select throws RangeError for a rank outside the tree", () => {
 
     expect(() => tree.select(7)).toThrow(RangeError);
     expect(() => tree.select(-1)).toThrow(RangeError);
+});
+
+test("keys returns all keys in order", () => {
+    const tree = buildSevenKeyTree();
+    const empty: BST<number, string> = new BST(compareNumbers);
+
+    expect(tree.keys()).toEqual([20, 30, 40, 50, 60, 70, 80]);
+    expect(empty.keys()).toEqual([]);
+});
+
+test("keysBetween returns the keys in the range, in order", () => {
+    const tree = buildSevenKeyTree();
+
+    expect(tree.keysBetween(35, 65)).toEqual([40, 50, 60]);
+    expect(tree.keysBetween(30, 30)).toEqual([30]);
+    expect(tree.keysBetween(65, 35)).toEqual([]);
+});
+
+test("spreading the tree gives [key, value] pairs in key order", () => {
+    const tree = buildSevenKeyTree();
+    const entries = [...tree];
+
+    expect(entries[0]).toEqual([20, "v20"]);
+    expect(entries[1]).toEqual([30, "v30"]);
+});
+
+test("for...of sees the keys in the same order as keys()", () => {
+    const tree = buildSevenKeyTree();
+    const seen: number[] = [];
+
+    for (const [key] of tree) {
+        seen.push(key);
+    }
+
+    expect(seen).toEqual(tree.keys());
+});
+
+test("deleteMin removes the smallest key", () => {
+    const tree = buildSevenKeyTree();
+
+    tree.deleteMin();
+
+    expect(tree.min()).toBe(30);
+    expect(tree.size()).toBe(6);
+});
+
+test("delete removes a leaf, a node with one child and the root", () => {
+    const tree = buildSevenKeyTree();
+    tree.deleteMin();
+
+    expect(tree.delete(80)).toBe(true);
+    expect(tree.delete(30)).toBe(true);
+    expect(tree.delete(50)).toBe(true);
+    expect(tree.keys()).toEqual([40, 60, 70]);
+});
+
+test("delete returns false for a missing key and keeps the size", () => {
+    const tree = buildSevenKeyTree();
+    tree.deleteMin();
+    [80, 30, 50].forEach(key => tree.delete(key));
+
+    expect(tree.delete(999)).toBe(false);
+    expect(tree.size()).toBe(3);
+});
+
+test("deleteMin on an empty tree leaves its size at 0", () => {
+    const tree: BST<number, string> = new BST(compareNumbers);
+
+    tree.deleteMin();
+
+    expect(tree.size()).toBe(0);
 });
