@@ -1,6 +1,6 @@
 // Tests for Parts 2-7: BST.
 import { test, expect } from "vitest";
-import { Comparator } from "../src/comparators"
+import { Comparator, reverse } from "../src/comparators"
 import { compareStrings, compareNumbers } from "../src/comparators";
 import { BST } from "../src/bst"
 
@@ -52,4 +52,34 @@ test("the comparator decides which keys are the same key", () => {
     expect(tree.get({ name: "retro", day: 3 })).toBe("room A");
     expect(tree.has({ name: "retro", day: 3 })).toBe(true);
     expect(tree.get({ name: "standup", day: 4 })).toBeUndefined();
+});
+
+test("min, max, floor and ceiling find the right keys", () => {
+    const tree: BST<number, number> = new BST(compareNumbers);
+    const keys = [50, 30, 70, 20, 40, 60, 80];
+
+    keys.forEach(key => tree.put(key, key));
+
+    expect(tree.min()).toBe(20);
+    expect(tree.max()).toBe(80);
+    expect(tree.floor(40)).toBe(40);
+    expect(tree.floor(45)).toBe(40);
+    expect(tree.floor(10)).toBeUndefined();
+    expect(tree.ceiling(45)).toBe(50);
+    expect(tree.ceiling(90)).toBeUndefined();
+});
+
+test("min and floor return undefined on an empty tree", () => {
+    const tree: BST<number, number> = new BST(compareNumbers);
+
+    expect(tree.min()).toBeUndefined();
+    expect(tree.floor(1)).toBeUndefined();
+});
+
+test("a reversed comparator flips the order", () => {
+    const tree: BST<number, number> = new BST(reverse(compareNumbers));
+    const nums = [1, 2, 3];
+
+    nums.forEach(num => tree.put(num, num));
+    expect(tree.min()).toBe(3);
 });

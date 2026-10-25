@@ -45,6 +45,23 @@ export class BST<K, V> {
         this.root = this.putNode(this.root, key, val);
     }
 
+    min(): K | undefined {
+        return this.getMinNode(this.root)?.key;
+    }
+
+    max(): K | undefined {
+        return this.getMaxNode(this.root)?.key;
+    }
+
+    floor(key: K): K | undefined {
+        return this.getFloorNode(this.root, key)?.key;
+    }
+
+    ceiling(key: K): K | undefined {
+        return this.getCeilNode(this.root, key)?.key;
+    }
+
+
     // - - - helpers - - -
 
     private getValue(node: Node<K, V> | null, key: K): V | undefined {
@@ -95,6 +112,62 @@ export class BST<K, V> {
         node.size = sizeOf(node.left) + sizeOf(node.right) + 1;
         
         return node
+    }
+
+    private getMinNode(node: Node<K, V> | null): Node<K, V> | null {
+        if (!node) {
+            return null;
+        }
+
+        while(node.left) {
+            node = node.left;
+        }
+
+        return node;
+    }
+
+    private getMaxNode(node: Node<K, V> | null): Node<K, V> | null {
+        if (!node) {
+            return null;
+        }
+
+        while (node.right) {
+            node = node.right;
+        }
+
+        return node;
+    }
+
+    private getFloorNode(node: Node<K, V> | null, key: K): Node<K, V> | null {
+        if (!node) {
+            return null;
+        }
+        const res = this.comparator(node.key, key);
+
+        if (res === 0) {
+            return node;
+        } else if (res < 0) {
+            const rightRes = this.getFloorNode(node.right, key);
+            return rightRes? rightRes : node;
+        } else {
+            return this.getFloorNode(node.left, key);
+        }
+    }
+
+    private getCeilNode(node: Node<K, V> | null, key: K): Node<K, V> | null {
+        if (!node) {
+            return null;
+        }
+
+        const res = this.comparator(node.key, key);
+        if (res === 0) {
+            return node;
+        } else if (res < 0) {
+            return this.getCeilNode(node.right, key);
+        } else {
+            const leftRes = this.getCeilNode(node.left, key);
+            return leftRes? leftRes : node;
+        }
     }
 }
 
