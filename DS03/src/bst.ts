@@ -98,6 +98,10 @@ export class BST<K, V> {
         return output;
     }
 
+    height(): number {
+        return this.getHeight(this.root);
+    }
+
 
     // - - - helpers - - -
 
@@ -324,6 +328,17 @@ export class BST<K, V> {
         
         node.size = sizeOf(node.left) + sizeOf(node.right) + 1;
         return node;
+    }
+
+    private getHeight(node: Node<K, V> | null): number {
+        if (!node) {
+            return -1;
+        }
+
+        const rightHeight = this.getHeight(node.right);
+        const leftHeight = this.getHeight(node.left);
+
+        return Math.max(rightHeight, leftHeight) + 1;
     }
 }
 

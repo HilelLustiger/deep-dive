@@ -3,6 +3,7 @@ import { test, expect } from "vitest";
 import { Comparator, reverse } from "../src/comparators"
 import { compareStrings, compareNumbers } from "../src/comparators";
 import { BST } from "../src/bst"
+import { seededRandom, shuffle } from "./random";
 
 test("a new tree has size 0, is empty, and get returns undefined", () => {
 
@@ -184,4 +185,60 @@ test("deleteMin on an empty tree leaves its size at 0", () => {
     tree.deleteMin();
 
     expect(tree.size()).toBe(0);
+});
+
+test("an empty tree has height -1 and a one-key tree has height 0", () => {
+    const tree: BST<number, string> = new BST(compareNumbers);
+    expect(tree.height()).toBe(-1);
+
+    tree.put(1, "one");
+    expect(tree.height()).toBe(0);
+});
+
+test("sorted insertion makes the tree a linked list", () => {
+    const tree: BST<number, number> = new BST(compareNumbers);
+
+    for (let i = 0; i < 1000; i++) {
+        tree.put(i, i);
+    }
+
+    expect(tree.height()).toBe(999);
+});
+
+test("random insertion keeps the tree short", () => {
+    const tree: BST<number, number> = new BST(compareNumbers);
+    const keys = Array.from({ length: 1000 }, (_, i) => i);
+
+    shuffle(keys, seededRandom(2026)).forEach(key => tree.put(key, key));
+
+    expect(tree.size()).toBe(1000);
+    expect(tree.height()).toBeLessThanOrEqual(40);
+});
+
+test("the tree agrees with a Map over random puts and deletes", () => {
+    const tree: BST<number, number> = new BST(compareNumbers);
+    const map = new Map<number, number>();
+    const random = seededRandom(7);
+
+    for (let step = 0; step < 5000; step++) {
+        const key = Math.floor(random() * 300);
+        if (random() < 0.6) {
+            tree.put(key, step);
+            map.set(key, step);
+        } else {
+            expect(tree.delete(key)).toBe(map.delete(key));
+        }
+    }
+
+    const sortedKeys = [...map.keys()].sort(compareNumbers);
+
+    expect(tree.size()).toBe(map.size);
+    expect(tree.keys()).toEqual(sortedKeys);
+    for (const [key, value] of map) {
+        expect(tree.get(key)).toBe(value);
+    }
+    sortedKeys.forEach((key, i) => {
+        expect(tree.rank(key)).toBe(i);
+        expect(tree.select(i)).toBe(key);
+    });
 });
