@@ -605,7 +605,7 @@ Write these in `tests/run.test.ts`, with a `later(ms, value)` helper like in Par
 - **A rejection is thrown into the generator:** a generator that yields `MyPromise.reject(new Error("failed"))` inside `try`, and returns `` `caught ${error.message}` `` from `catch`, gives `"caught failed"`.
 - **An error the generator doesn't catch rejects the promise, after `finally` runs:** a generator that yields a rejected promise inside `try { ... } finally { log.push("finally"); }` gives a promise that rejects with that error, and the log is `["finally"]`.
 - `run` gives the same result as the equivalent `async` function. Write both versions of a function that awaits `later(5, 1)` into `a`, then awaits a rejected promise inside `try`, and returns `a + 1` from `catch`. Both give `2`.
-- **The body starts synchronously, like an `async` function:** a flag set at the start of the generator is already `true` on the line after calling `run`. (Compare LLM01 Part 1: an `async` function runs up to its first `await` as soon as it's called.)
+- **The body starts synchronously, like an `async` function:** a flag set at the start of the generator is already `true` on the line after calling `run`. (Compare LLM02 Part 1: an `async` function runs up to its first `await` as soon as it's called.)
 
 ---
 

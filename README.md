@@ -28,7 +28,7 @@ Every project lives in its own folder with two documents:
   Nodes and raw pointers, insert/delete/traverse, freeing nodes in the destructor
 - **DS02 · Hash Map** — Python  
   Hashing, collisions, resizing, the mapping protocol (`__getitem__`, `__setitem__`)
-- **[DS03 · Binary Search Tree](DS03/)** — TypeScript · *<ins>complete</ins>*
+- **[DS03 · Binary Search Tree](DS03/)** — TypeScript · *<ins>complete</ins>*  
   Ordered tree insert/search/delete, generics and comparator functions
 - **DS04 · Priority Queue** — Java  
   Binary heap in an array, sift-up and sift-down, bounded generics, `Iterable`
@@ -108,19 +108,27 @@ Every project lives in its own folder with two documents:
 
 ### LLM Fundamentals
 
-- **[LLM01 · Talking to an LLM](LLM01/)** — TypeScript  
-  Raw HTTP vs. SDK, content blocks, stop reasons, tokens and cost, sampling and effort, system prompts, conversation history and the context window, streaming (SSE), errors, retries and timeouts, structured output
-- **LLM02 · Embeddings and Retrieval** — TypeScript · MongoDB Atlas  
+- **LLM01 · How a Model Produces Text** — Python  
+  Tokenization and byte-pair encoding from scratch, why models struggle with spelling and counting, logits and softmax, sampling (temperature, top-k, top-p), no API
+- **[LLM02 · Talking to an LLM](LLM02/)** — TypeScript · *to be revised*  
+  One interface you define, implemented for two providers (Claude and a local model), the stateless API, tokens and cost, system prompts, conversation history and the context window, streaming (SSE), errors, retries and timeouts, structured output, provider-specific features kept apart
+- **LLM03 · Prompts and Evals** — TypeScript  
+  System prompts, few-shot examples, prompt templates, test sets for non-deterministic output, graders and LLM-as-judge, catching regressions when a prompt or model changes
+- **LLM04 · Embeddings and Retrieval** — TypeScript · MongoDB Atlas  
   Embeddings and cosine similarity, brute-force vs. indexed search, vector indexes, chunking, retrieval evals (recall@k), context injection (RAG), long-term memory
+- **LLM05 · Fine-tuning** — Python  
+  When fine-tuning beats prompting and retrieval, preparing a dataset, LoRA on a small open model, measuring before and after with the evals from LLM03
 
 ### AI Agents
 
-- **AGENT01 · Agent From Scratch** — TypeScript  
-  Tool definitions, a hand-written agent loop, tool errors, workflows vs. agents, memory as tools, transcript logging, task-success evals
-- **[AGENT02 · Personal Assistant Agent](AGENT02/)** — Python · LangGraph · *draft*  
-  The agent loop as a graph, conditional routing, checkpointers and durable state, human-in-the-loop interrupts, long-term memory stores, subgraphs and multi-agent composition, refactoring a fine-grained graph into a coarse one
-- **AGENT03 · MCP Server** — TypeScript  
+- **AGENT01 · Agents From Scratch** — TypeScript  
+  Tool definitions and tool calling, a hand-written agent loop, tool errors, workflow patterns (prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer) vs. autonomous agents, memory as tools, transcript logging, task-success evals
+- **AGENT02 · MCP Server** — TypeScript  
   The Model Context Protocol, exposing tools and resources, connecting a server to any agent
+- **[AGENT03 · Personal Assistant Agent](AGENT03/)** — Python · LangGraph · *draft*  
+  The agent loop as a graph, conditional routing, checkpointers and durable state, human-in-the-loop interrupts, long-term memory stores, subgraphs and multi-agent composition, refactoring a fine-grained graph into a coarse one
+- **AGENT04 · Security of LLM Apps** — TypeScript  
+  Prompt injection, direct and through retrieved documents or tool output, least-privilege tools, human approval for destructive actions, separating data from instructions, testing attacks with evals
 
 ### Tooling
 

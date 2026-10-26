@@ -1,4 +1,4 @@
-# Assignment AGENT02 — Personal Assistant Agent (Python · LangGraph)
+# Assignment AGENT03 — Personal Assistant Agent (Python · LangGraph)
 
 > **Draft.** This is an outline of the parts, not the full assignment. Each part still needs its required interfaces, tests, thresholds and "Done when" list before work on it starts.
 
@@ -75,7 +75,7 @@ Split the assistant into explicit nodes for each step (classify the request, rou
 
 ## Part 3 — Checkpointer and durable state
 
-Add a SQLite checkpointer and conversation threads. Conversations survive a process restart, two threads don't see each other's history, and you can inspect and rewind a thread's past states. Compare with the in-process conversation history from LLM01: what does a checkpointer add?
+Add a SQLite checkpointer and conversation threads. Conversations survive a process restart, two threads don't see each other's history, and you can inspect and rewind a thread's past states. Compare with the in-process conversation history from LLM02: what does a checkpointer add?
 
 ## Part 4 — Human approval with interrupts
 
@@ -83,7 +83,7 @@ Before any destructive tool (`delete_todo`) runs, the graph pauses and asks for 
 
 ## Part 5 — Long-term memory with a store
 
-Add a LangGraph store with semantic search so the assistant remembers facts across threads, not only within one. Compare with the memory you built on MongoDB in LLM02: what the store does for you, and what you can no longer see.
+Add a LangGraph store with semantic search so the assistant remembers facts across threads, not only within one. Compare with the memory you built on MongoDB in LLM04: what the store does for you, and what you can no longer see.
 
 ## Part 6 — A second agent as a subgraph
 

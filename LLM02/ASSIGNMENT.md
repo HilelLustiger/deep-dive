@@ -1,4 +1,4 @@
-# Assignment LLM01 — Talking to an LLM (TypeScript)
+# Assignment LLM02 — Talking to an LLM (TypeScript)
 
 **Topics:** the Messages API over raw HTTP and through the SDK, content blocks, stop reasons, tokens, usage and cost, sampling (temperature, top-k, top-p) and effort, system prompts, conversation history and the context window, streaming with server-sent events, time to first token, errors, retries, backoff and timeouts, structured output
 
@@ -74,7 +74,7 @@ Every call in this assignment is asynchronous. You know the ideas from ASYNC02 i
 - **[Google SRE book, ch. 22 — Addressing Cascading Failures](https://sre.google/sre-book/addressing-cascading-failures/)**, sections "Retries" and "Latency and Deadlines": why retries at every layer multiply, retry budgets, deadline propagation.
 - **[Anthropic docs — Preserved thinking](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)**: the rules behind Part 5's "don't edit history".
 - Anthropic docs — Prompt caching and Compaction: why resending the whole history doesn't have to cost the whole history, and what the API can do when a conversation outgrows the window.
-- The rest of the Anthropic Academy course: section 6 (RAG) is LLM02, sections 5 and 10 (tool use, agents and workflows) are AGENT01.
+- The rest of the Anthropic Academy course: section 6 (RAG) is LLM04, sections 5 and 10 (tool use, agents and workflows) are AGENT01.
 
 ---
 
