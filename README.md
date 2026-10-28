@@ -108,8 +108,8 @@ Every project lives in its own folder with two documents:
 
 ### LLM Fundamentals
 
-- **LLM01 · How a Model Produces Text** — Python  
-  Tokenization and byte-pair encoding from scratch, why models struggle with spelling and counting, logits and softmax, sampling (temperature, top-k, top-p), no API
+- **[LLM01 · How a Model Produces Text](LLM01/)** — Python  
+  Tokenization and byte-pair encoding from scratch, why models struggle with spelling and counting, a bigram model built by counting, smoothing and perplexity, logits and softmax, sampling (temperature, greedy, top-k, top-p), GPT-2 run locally, no API
 - **[LLM02 · Talking to an LLM](LLM02/)** — TypeScript · *to be revised*  
   One interface you define, implemented for two providers (Claude and a local model), the stateless API, tokens and cost, system prompts, conversation history and the context window, streaming (SSE), errors, retries and timeouts, structured output, provider-specific features kept apart
 - **LLM03 · Prompts and Evals** — TypeScript  
