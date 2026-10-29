@@ -89,3 +89,69 @@ test("callbacks run in the order they were added, also when added after settling
 
     expect(log).toEqual(["a", "b", "c"]);
 });
+
+// Part 3
+
+function rejected(message: string): MyPromise<never> {
+    return new MyPromise((_, reject) => reject(new Error(message)));
+}
+
+test("then returns a promise for the callback's result", async () => {
+    let seen: unknown;
+
+    new MyPromise<number>(resolve => resolve(2))
+        .then(value => value * 10)
+        .then(value => {
+            seen = value;
+        });
+
+    await nextTask();
+    expect(seen).toBe(20);
+});
+
+test("an error skips steps until it's handled, then the chain recovers", async () => {
+    const log: string[] = [];
+
+    new MyPromise<number>(resolve => resolve(1))
+        .then(() => {
+            throw new Error("step 1 failed");
+        })
+        .then(() => {
+            log.push("skipped");
+        })
+        .then(undefined, (error: Error) => {
+            log.push(error.message);
+            return "recovered";
+        })
+        .then(value => {
+            log.push(String(value));
+        });
+
+    await nextTask();
+    expect(log).toEqual(["step 1 failed", "recovered"]);
+});
+
+test("missing callbacks pass the value and the reason through", async () => {
+    let value: unknown;
+    let reason: unknown;
+
+    new MyPromise<number>(resolve => resolve(5))
+        .then()
+        .then(null, undefined)
+        .then(v => {
+            value = v;
+        });
+    rejected("r")
+        .then(v => v)
+        .then(undefined, (error: Error) => {
+            reason = error.message;
+        });
+
+    await nextTask();
+    expect(value).toBe(5);
+    expect(reason).toBe("r");
+});
+
+test("catch turns a rejection into a fulfillment", async () => {
+    await expect(rejected("x").catch((error: Error) => error.message)).resolves.toBe("x");
+});
