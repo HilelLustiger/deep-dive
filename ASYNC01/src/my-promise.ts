@@ -1,5 +1,5 @@
 export type State = "pending" | "fulfilled" | "rejected";
-export type Executor<T> = (resolve: (value: T) => void, reject: (reason?: unknown) => void) => void;
+export type Executor<T> = (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: unknown) => void) => void;
 
 export class MyPromise<T> implements PromiseLike<T> {
     private state: State = "pending";
@@ -10,25 +10,17 @@ export class MyPromise<T> implements PromiseLike<T> {
 
         let called: boolean = false;
 
-        const settle = (value: unknown, state: State): void => {
-            called = true;
-            this.state = state;
-            this.result = value;
-            for (const fn of this.reactions) {
-                queueMicrotask(fn);
-            }
-            this.reactions = []
-        }
-
-        const resolve = (value: T): void => {
+        const resolve = (value: T | PromiseLike<T>): void => {
             if (!called) {
-                settle(value, "fulfilled");
+                called = true;
+                this.resolveWith(value);
             }
         }
 
         const reject = (reason?: unknown): void => {
             if (!called) {
-                settle(reason, "rejected");
+                called = true;
+                this.settle(reason, "rejected");
             }
         }
 
@@ -56,6 +48,18 @@ export class MyPromise<T> implements PromiseLike<T> {
     //     }
     // }
 
+    private settle (value: unknown, state: State): void {
+        if (this.state !== "pending") {
+            return;
+        }
+
+        this.state = state;
+        this.result = value;
+        for (const fn of this.reactions) {
+            queueMicrotask(fn);
+        }
+        this.reactions = []
+    }
 
     // Part 3 Implementation.
     then<TResult1 = T, TResult2 = never>(
@@ -96,5 +100,77 @@ export class MyPromise<T> implements PromiseLike<T> {
 
     catch<TResult = never>(onRejected?: ((reason: any) => TResult | PromiseLike<TResult>) | null): MyPromise<T | TResult> {
         return this.then(undefined, onRejected);
+    }
+
+    static resolve<T>(value: T | PromiseLike<T>): MyPromise<T> {
+        if (value instanceof MyPromise) {
+            return value;
+        } else {
+            return new MyPromise(resolve => resolve(value));
+        }
+    }
+
+    static reject<T = never>(reason?: unknown): MyPromise<T> {
+        return new MyPromise<T>((_, reject) => reject(reason));
+    }
+
+    static withResolvers<T>(): { promise: MyPromise<T>;
+         resolve: (value: T | PromiseLike<T>) => void;
+          reject: (reason?: unknown) => void 
+        }{
+        let resolve!: (value: T | PromiseLike<T>) => void;
+        let reject!: (reason?: unknown) => void;
+
+        const promise = new MyPromise<T>((res, rej) => {
+            resolve = res;
+            reject = rej;
+        })
+
+        return {promise, resolve, reject};
+    }
+
+    private resolveWith(x: unknown): void {
+        if (x === this) {
+            this.settle(new TypeError("can't resolve a promise with itself"), "rejected");
+        } else if ((typeof x === "object" && x !== null) || typeof x === "function") {
+            let then: unknown;
+            try {
+                then = (x as {then: unknown}).then;
+            } catch (e) {
+                this.settle(e, "rejected");
+                return;
+            }
+
+            if (typeof then === "function") {
+                let called = false;
+                
+                const resolvePromise = (y: unknown) => {
+                    if (called) return;
+                        called = true;
+                        this.resolveWith(y);
+                }
+
+                const rejectPromise = (r: unknown) => {
+                    if (called) return;
+                    called = true;
+                    this.settle(r, "rejected");
+                }
+
+                try {
+                    then.call(x, resolvePromise, rejectPromise);
+                } catch (e) {
+                    if (!called) {
+                        called = true;
+                        this.settle(e, "rejected");
+                    }
+                }
+                return;
+            }
+
+            this.settle(x, "fulfilled");
+
+        } else {
+            this.settle(x, "fulfilled");
+        }
     }
 }
