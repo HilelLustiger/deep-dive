@@ -291,7 +291,7 @@ signal.signal(signal.SIGTERM, lambda signum, frame: stop.set())
 
 while not stop.is_set():
     print("tick", flush=True)
-    stop.wait(2)    # like time.sleep(2), but returns at once when stop is set
+    stop.wait(2)  # like time.sleep(2), but returns at once when stop is set
 ```
 
 The worker does not get its own Dockerfile. It runs from the **same image** as the API with a different command. One image, two containers, two processes.
