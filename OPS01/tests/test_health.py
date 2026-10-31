@@ -1,4 +1,5 @@
 """Tests for Part 1: /health."""
+
 from fastapi.testclient import TestClient
 
 from app.main import app
