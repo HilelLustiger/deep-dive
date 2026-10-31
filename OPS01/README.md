@@ -64,3 +64,19 @@ Compose recreates only the containers whose image changed. The volume, and so th
 **Rolling back:** put the previous SHA back in `.env` and run the same two commands. Every SHA tag still exists in the registry and always names the same build, so the old version is exactly what ran before. With only `latest` there would be nothing to go back to.
 
 The step after that is to make CD run these commands itself: a deploy job after `publish` that connects to the server and changes `TAG`. Schema changes would also need care, because a rollback restores the old code but not the old database.
+
+## Verification log: Parts 3 and 4
+
+The workflow ran from `.github/workflows/ci.yml` at the repository root while the assignment was in progress. GitHub reads workflows only from there. When the assignment was done, it was moved to [`ci.yml`](ci.yml) in this folder, so it no longer runs on other projects' pull requests. To run it again, move it back.
+
+| Check | Result |
+|---|---|
+| Pull request [#4](https://github.com/HilelLustiger/deep-dive/pull/4), [first run](https://github.com/HilelLustiger/deep-dive/actions/runs/41199509897) | `lint` and `test` ran in parallel; `build` started after both passed |
+| pytest summary in the `test` job | `6 passed`: `/health` and the five integration tests against the Postgres service container |
+| Caching, [second run](https://github.com/HilelLustiger/deep-dive/actions/runs/41200377979) | `setup-python` logged `Cache restored successfully`; "Install dependencies" took 12 s in the first run, 10 s in the second |
+| `publish` on the pull request | skipped |
+| `publish` after the merge, [run on `main`](https://github.com/HilelLustiger/deep-dive/actions/runs/41200790847) | succeeded; pushed `ghcr.io/hilellustiger/ops01-items-api:7ff596880f7a532a2e2b230a41fd93b0d2d18a44`, the same SHA `git rev-parse origin/main` prints |
+| `docker pull` of that tag with no local copy and no login | worked: the repository is public, so the package is too |
+| `docker run` of the pulled image with `--platform linux/amd64` | exited with `KeyError: 'DATABASE_URL'`, because since Part 2 the service needs its database at startup; next to a Postgres container on a shared network, `/health` returned 200 and `POST /items` returned 201 |
+
+Not done: the deliberately failing test, the deliberate lint failure, and the status badge. The badge would break once the workflow left the repository root.
