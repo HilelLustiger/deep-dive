@@ -155,3 +155,55 @@ test("missing callbacks pass the value and the reason through", async () => {
 test("catch turns a rejection into a fulfillment", async () => {
     await expect(rejected("x").catch((error: Error) => error.message)).resolves.toBe("x");
 });
+
+// Part 5
+
+test("resolve returns a MyPromise as is, wraps other values, and reject rejects", async () => {
+    const promise = MyPromise.resolve(1);
+    const error = new Error("no");
+
+    expect(MyPromise.resolve(promise)).toBe(promise);
+    await expect(MyPromise.resolve("v")).resolves.toBe("v");
+    await expect(MyPromise.reject(error)).rejects.toBe(error);
+});
+
+test("withResolvers settles its promise from outside the executor", async () => {
+    const { promise, resolve } = MyPromise.withResolvers<number>();
+
+    setTimeout(() => resolve(7), 0);
+
+    await expect(promise).resolves.toBe(7);
+});
+
+test("finally runs on both outcomes and passes the result through", async () => {
+    const log: string[] = [];
+    const error = new Error("e");
+
+    const fulfilled = MyPromise.resolve(1).finally(() => {
+        log.push("fulfilled");
+        return 99;
+    });
+    const failed = MyPromise.reject(error).finally(() => {
+        log.push("rejected");
+    });
+
+    await expect(fulfilled).resolves.toBe(1);
+    await expect(failed).rejects.toBe(error);
+    expect(log).toEqual(["fulfilled", "rejected"]);
+});
+
+test("finally waits for a promise that onFinally returns", async () => {
+    const start = Date.now();
+
+    await MyPromise.resolve(1).finally(() => new MyPromise(resolve => setTimeout(resolve, 30)));
+
+    expect(Date.now() - start).toBeGreaterThanOrEqual(25);
+});
+
+test("an error thrown in onFinally replaces the result", async () => {
+    const promise = MyPromise.resolve(1).finally(() => {
+        throw new Error("cleanup failed");
+    });
+
+    await expect(promise).rejects.toThrow("cleanup failed");
+});

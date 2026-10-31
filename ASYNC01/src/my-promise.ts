@@ -173,4 +173,22 @@ export class MyPromise<T> implements PromiseLike<T> {
             this.settle(x, "fulfilled");
         }
     }
+
+    finally(onFinally?: (() => unknown) | null): MyPromise<T> {
+        if (typeof onFinally !== "function") {
+            return this.then();
+        }
+
+        const onFulfilled = (value: T) => {
+            const res = onFinally();
+            return MyPromise.resolve(res).then(() => value);
+        }
+
+        const onRejected = (reason: unknown) => {
+            const res = onFinally();
+            return MyPromise.resolve(res).then(() => {throw reason});
+        }
+            
+        return this.then(onFulfilled, onRejected);
+    }
 }
