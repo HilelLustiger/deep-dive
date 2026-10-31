@@ -19,4 +19,21 @@ In shell form there are two processes. Docker starts `sh` as PID 1, and `sh` for
 
 The difference shows when the container stops. `docker stop` sends `SIGTERM` to PID 1 only. In shell form, `sh` gets it and does nothing with it: it doesn't pass it on to the server, and as PID 1 it isn't even stopped by it. The server never learns it was asked to stop. After 10 seconds Docker sends `SIGKILL`, which kills everything in the container at once, in the middle of whatever it was doing. In exec form, the server gets `SIGTERM` itself, finishes what it's doing and exits cleanly, in under a second.
 
-So exec form is the one to keep. The server shuts down gracefully, and that doesn't depend on which shell an image happens to ship. The `sh` in `python:3.12-slim` is Debian's `dash`, and it didn't hand PID 1 over to the server.
+So exec form is the one to keep.
+
+## Part 2: the Compose stack
+
+| Check | Result |
+|---|---|
+| `POST /items` with `{"name":"lamp"}`, then `GET /items/1` | 201, then the item; the worker logs `items: 1` |
+| `socket.gethostbyname('db')` inside `api` | `172.20.0.2`; no IP address appears in any file |
+| `db` published ports, `nc -z localhost 5432` | none; connection refused |
+| `ops01_backend` `Internal` | `true` |
+| `down`, then `up`: `GET /items/1` | 200, the data is in the `pgdata` volume |
+| `down -v`, then `up`: `GET /items/1` | 404, the volume was deleted |
+| `time docker compose down` | 1.1 s |
+| The password outside `.env` | not found; `git status` doesn't list `.env` |
+
+**Startup order.** With `condition: service_healthy`, `api` started half a second after `db` first reported healthy. With `condition: service_started` and a fresh volume, `api` and `worker` started while Postgres was still initializing, and both crashed: `api` with `connection refused` in `init_db()` and `Application startup failed`, `worker` with exit code 1. `depends_on` alone only orders the containers. Only the healthcheck makes a service wait until the database actually accepts connections.
+
+**A race between `api` and `worker`.** The first time the stack came up, `worker` crashed with `relation "items" does not exist`. Both services wait for `db`, so they start at the same moment, and the worker queried the table before the API's lifespan had created it. Each service now calls `init_db()` itself. `CREATE TABLE IF NOT EXISTS` does nothing when the table is already there, so the order no longer matters. The server shuts down gracefully, and that doesn't depend on which shell an image happens to ship. The `sh` in `python:3.12-slim` is Debian's `dash`, and it didn't hand PID 1 over to the server.
