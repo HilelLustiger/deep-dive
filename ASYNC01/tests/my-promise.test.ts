@@ -1,7 +1,7 @@
 // Tests for Parts 2-6 and 8: MyPromise.
 import { test, expect } from "vitest";
 import { MyPromise } from "../src/my-promise";
-import { nextTask } from "./helpers";
+import { nextTask, wait } from "./helpers";
 
 // Part 2
 
@@ -206,4 +206,70 @@ test("an error thrown in onFinally replaces the result", async () => {
     });
 
     await expect(promise).rejects.toThrow("cleanup failed");
+});
+
+// Part 6
+
+function later<T>(ms: number, value: T): MyPromise<T> {
+    return new MyPromise(resolve => setTimeout(() => resolve(value), ms));
+}
+
+function failLater(ms: number, message: string): MyPromise<never> {
+    return new MyPromise((_, reject) => setTimeout(() => reject(new Error(message)), ms));
+}
+
+test("all keeps input order, accepts plain values, and gives [] for no input", async () => {
+    await expect(MyPromise.all([later(30, "a"), later(10, "b"), "c"])).resolves.toEqual(["a", "b", "c"]);
+    await expect(MyPromise.all([])).resolves.toEqual([]);
+});
+
+test("all rejects with the first rejection", async () => {
+    const promise = MyPromise.all([later(30, "a"), failLater(10, "first"), failLater(20, "second")]);
+
+    await expect(promise).rejects.toThrow("first");
+});
+
+test("allSettled reports every outcome in input order", async () => {
+    const results = await MyPromise.allSettled([later(10, 1), failLater(5, "x")]);
+
+    expect(results[0]).toEqual({ status: "fulfilled", value: 1 });
+    expect(results[1].status).toBe("rejected");
+});
+
+test("race settles like the first item to settle", async () => {
+    await expect(MyPromise.race([later(30, "slow"), later(10, "fast")])).resolves.toBe("fast");
+    await expect(MyPromise.race([later(30, "slow"), failLater(10, "fast error")])).rejects.toThrow("fast error");
+});
+
+test("race with no items stays pending", async () => {
+    let settled = false;
+
+    MyPromise.race([]).then(
+        () => {
+            settled = true;
+        },
+        () => {
+            settled = true;
+        },
+    );
+
+    await wait(20);
+    expect(settled).toBe(false);
+});
+
+test("any fulfills with the first fulfillment", async () => {
+    await expect(MyPromise.any([failLater(5, "x"), later(20, "ok")])).resolves.toBe("ok");
+});
+
+test("any rejects with an AggregateError of the reasons in input order", async () => {
+    const error = await MyPromise.any([failLater(20, "a"), failLater(5, "b")]).then(() => null, e => e);
+
+    expect(error).toBeInstanceOf(AggregateError);
+    expect(error.errors.map((e: Error) => e.message)).toEqual(["a", "b"]);
+});
+
+test("any with no items rejects with an AggregateError", async () => {
+    const error = await MyPromise.any([]).then(() => null, e => e);
+
+    expect(error).toBeInstanceOf(AggregateError);
 });

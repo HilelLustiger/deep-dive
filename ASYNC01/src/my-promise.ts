@@ -1,6 +1,10 @@
 export type State = "pending" | "fulfilled" | "rejected";
 export type Executor<T> = (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: unknown) => void) => void;
 
+export type SettledResult<T> =
+    | { status: "fulfilled"; value: T }
+    | { status: "rejected"; reason: unknown };
+
 export class MyPromise<T> implements PromiseLike<T> {
     private state: State = "pending";
     private result: unknown = undefined;
@@ -191,4 +195,81 @@ export class MyPromise<T> implements PromiseLike<T> {
             
         return this.then(onFulfilled, onRejected);
     }
+
+    static all<T>(values: Iterable<T | PromiseLike<T>>): MyPromise<T[]> {
+        const items = [...values];
+
+        if (items.length === 0) {
+            return MyPromise.resolve([]);
+        }
+        let counter: number = items.length;
+        
+        return new MyPromise((resolve, reject) => {
+            const output: T[] = new Array(counter);
+
+            for (let i=0; i<counter; i++){
+                MyPromise.resolve(items[i]).then(
+                    result => {
+                        output[i] = result;
+                        counter -= 1;
+                        if (counter === 0){
+                            resolve(output);
+                        }},
+                    reject
+                )
+            }
+        })
+    }
+    
+    static allSettled<T>(values: Iterable<T | PromiseLike<T>>): MyPromise<SettledResult<T>[]>{
+        const items = [...values];
+
+        const wrapped = items.map(item => MyPromise.resolve(item).then(
+            (result): SettledResult<T> => ({ status: "fulfilled", value: result}),
+            (error): SettledResult<T> => ({ status: "rejected", reason: error})
+        ));
+
+        return MyPromise.all(wrapped);
+    }
+
+    static race<T>(values: Iterable<T | PromiseLike<T>>): MyPromise<T> {
+        const items = [...values];
+
+        return new MyPromise((resolve, reject) => {
+            items.forEach(item => {
+                MyPromise.resolve(item).then(
+                    result => resolve(result),
+                    reject
+                )
+            })
+        })
+    }
+
+    static any<T>(values: Iterable<T | PromiseLike<T>>): MyPromise<T> {
+        const items = [...values];
+
+        if (items.length === 0){
+            return MyPromise.reject(new AggregateError([], "All promises were rejected"));
+        }
+
+        let counter: number = items.length;
+        
+        return new MyPromise((resolve, reject) => {
+            const output = new Array(counter);
+
+            for (let i=0; i<counter; i++) {
+                MyPromise.resolve(items[i]).then(
+                    resolve,
+                    error => {
+                        counter -= 1;
+                        output[i] = error;
+                        if (counter === 0){
+                            reject(new AggregateError(output, "All promises were rejected"))
+                        }
+                    }
+                )
+            }
+        })
+    }
+
 }
