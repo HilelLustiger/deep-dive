@@ -123,8 +123,8 @@ Every project lives in its own folder with two documents:
 
 - **[AGENT01 · Agents From Scratch](AGENT01/)** — TypeScript  
   Tool definitions with JSON Schema, tool calls and results, parallel calls, a hand-written agent loop, stop reasons and step limits, tool errors as results, a provider-neutral model interface
-- **AGENT02 · MCP Server** — TypeScript  
-  The Model Context Protocol, exposing AGENT01's tools from a server, connecting the agent to it
+- **[AGENT02 · MCP Server](AGENT02/)** — TypeScript  
+  The Model Context Protocol, serving AGENT01's tools over stdio, protocol errors vs. tool errors, the MCP Inspector, using a server's tools in your own agent
 - **AGENT03 · Agentic RAG** — TypeScript  
   Chunking documents, embeddings and similarity search in memory, retrieval as a tool the agent decides when to use, answers that cite their sources
 - **AGENT04 · Workflow Patterns** — TypeScript  
