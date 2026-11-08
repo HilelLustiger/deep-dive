@@ -1,4 +1,4 @@
-# Assignment AGENT03 — Personal Assistant Agent (Python · LangGraph)
+# Assignment AGENT05 — Personal Assistant Agent (Python · LangGraph)
 
 > **Draft.** This is an outline of the parts, not the full assignment. Each part still needs its required interfaces, tests, thresholds and "Done when" list before work on it starts.
 
