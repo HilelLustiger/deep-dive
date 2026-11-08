@@ -125,8 +125,8 @@ Every project lives in its own folder with two documents:
   Tool definitions with JSON Schema, tool calls and results, parallel calls, a hand-written agent loop, stop reasons and step limits, tool errors as results, a provider-neutral model interface
 - **[AGENT02 · MCP Server](AGENT02/)** — TypeScript  
   The Model Context Protocol, serving AGENT01's tools over stdio, protocol errors vs. tool errors, the MCP Inspector, using a server's tools in your own agent
-- **AGENT03 · Agentic RAG** — TypeScript  
-  Chunking documents, embeddings and similarity search in memory, retrieval as a tool the agent decides when to use, answers that cite their sources
+- **[AGENT03 · Agentic RAG](AGENT03/)** — TypeScript  
+  Chunking, embeddings and cosine similarity, a brute-force vector store, classic RAG vs. retrieval as a tool the agent decides when to use, answers that cite their sources, checking citations
 - **AGENT04 · Workflow Patterns** — TypeScript  
   Prompt chaining, routing, parallelization, orchestrator-workers and evaluator-optimizer, and when a fixed workflow beats an autonomous agent
 - **[AGENT05 · Personal Assistant Agent](AGENT05/)** — Python · LangGraph · *draft*  
