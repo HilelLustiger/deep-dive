@@ -97,7 +97,7 @@ Every project lives in its own folder with two documents:
 
 ### DevOps
 
-- **[OPS01 · Containers and CI/CD](OPS01/)** — Python · Docker · GitHub Actions  
+- **[OPS01 · Containers and CI/CD](OPS01/)** — Python · Docker · GitHub Actions · *<ins>complete</ins>*  
   Images and layers, build cache, Compose networking and volumes, healthchecks, CI pipelines, service containers, publishing to a registry
 - **OPS02 · Deploying to a Server** — Bash · Docker · GitHub Actions  
   Linux server over SSH, reverse proxy and TLS, deploying by image SHA, rollback
