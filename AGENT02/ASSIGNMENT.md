@@ -284,3 +284,14 @@ No tests in this part.
 npx tsc --noEmit     # type check
 npx vitest run       # all tests; none of them calls a real model or starts a process
 ```
+
+---
+
+## Cleaning up
+
+What this assignment installed, and how to remove it when you're done:
+
+- **The packages:** `rm -rf node_modules` in this folder.
+- **The MCP Inspector:** `npx` downloaded it into its cache. `rm -rf ~/.npm/_npx` removes everything `npx` has downloaded; anything you run with `npx` again is downloaded again.
+- **The server in Claude Code,** if you added it: `claude mcp remove agent-tools`.
+- **Ollama and its model:** keep them for AGENT03. The cleanup section of AGENT03 removes them.
