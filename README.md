@@ -24,7 +24,7 @@ Every project lives in its own folder with two documents:
 
 ### Data Structures From Scratch
 
-- **DS01 · Linked List** — C++  
+- **[DS01 · Linked List](DS01/)** — C++  
   Nodes and raw pointers, insert/delete/traverse, freeing nodes in the destructor
 - **[DS02 · Hash Map](DS02/)** — Python  
   Hashing and the `__eq__`/`__hash__` contract, separate chaining, load factor and resizing, linear probing with tombstones, `MutableMapping`, testing against `dict`
@@ -136,7 +136,7 @@ Every project lives in its own folder with two documents:
 
 ### Tooling
 
-- **TOOL01 · C++ Build and Test Setup** — C++ · CMake  
+- **[TOOL01 · C++ Build and Test Setup](TOOL01/)** — C++ · CMake  
   Headers and source files, compiling and linking, CMake, GoogleTest, compiler warnings, sanitizers
 - **TOOL02 · Git Internals** — Git  
   Objects, commits and refs, the index, branches as pointers, rebase, reset and reflog, rewriting history
