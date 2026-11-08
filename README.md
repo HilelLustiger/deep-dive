@@ -49,7 +49,7 @@ Every project lives in its own folder with two documents:
 
 ### Asynchronous Programming
 
-- **[ASYNC01 · Promise Chain](ASYNC01/)** — TypeScript  
+- **[ASYNC01 · Promise Chain](ASYNC01/)** — TypeScript · *<ins>complete</ins>*  
   A Promise from scratch to the Promises/A+ spec, microtasks, chaining and error propagation, thenables, combinators, async/await built from generators, unhandled rejections
 - **[ASYNC02 · Async Site Checker](ASYNC02/)** — Python · *<ins>complete</ins>*  
   Coroutines, tasks, `gather` vs. `TaskGroup`, timeouts and cancellation, concurrency limits, blocking code
@@ -97,7 +97,7 @@ Every project lives in its own folder with two documents:
 
 ### DevOps
 
-- **[OPS01 · Containers and CI/CD](OPS01/)** — Python · Docker · GitHub Actions  
+- **[OPS01 · Containers and CI/CD](OPS01/)** — Python · Docker · GitHub Actions · *<ins>complete</ins>*  
   Images and layers, build cache, Compose networking and volumes, healthchecks, CI pipelines, service containers, publishing to a registry
 - **OPS02 · Deploying to a Server** — Bash · Docker · GitHub Actions  
   Linux server over SSH, reverse proxy and TLS, deploying by image SHA, rollback
@@ -115,19 +115,23 @@ Every project lives in its own folder with two documents:
 - **LLM03 · Prompts and Evals** — TypeScript  
   System prompts, few-shot examples, prompt templates, test sets for non-deterministic output, graders and LLM-as-judge, catching regressions when a prompt or model changes
 - **LLM04 · Embeddings and Retrieval** — TypeScript · MongoDB Atlas  
-  Embeddings and cosine similarity, brute-force vs. indexed search, vector indexes, chunking, retrieval evals (recall@k), context injection (RAG), long-term memory
+  Embeddings and cosine similarity, brute-force vs. indexed search, vector indexes, chunking strategies, retrieval evals (recall@k), long-term memory
 - **LLM05 · Fine-tuning** — Python  
   When fine-tuning beats prompting and retrieval, preparing a dataset, LoRA on a small open model, measuring before and after with the evals from LLM03
 
 ### AI Agents
 
-- **AGENT01 · Agents From Scratch** — TypeScript  
-  Tool definitions and tool calling, a hand-written agent loop, tool errors, workflow patterns (prompt chaining, routing, parallelization, orchestrator-workers, evaluator-optimizer) vs. autonomous agents, memory as tools, transcript logging, task-success evals
-- **AGENT02 · MCP Server** — TypeScript  
-  The Model Context Protocol, exposing tools and resources, connecting a server to any agent
-- **[AGENT03 · Personal Assistant Agent](AGENT03/)** — Python · LangGraph · *draft*  
+- **[AGENT01 · Agents From Scratch](AGENT01/)** — TypeScript  
+  Tool definitions with JSON Schema, tool calls and results, parallel calls, a hand-written agent loop, stop reasons and step limits, tool errors as results, a provider-neutral model interface
+- **[AGENT02 · MCP Server](AGENT02/)** — TypeScript  
+  The Model Context Protocol, serving AGENT01's tools over stdio, protocol errors vs. tool errors, the MCP Inspector, using a server's tools in your own agent
+- **[AGENT03 · Agentic RAG](AGENT03/)** — TypeScript  
+  Chunking, embeddings and cosine similarity, a brute-force vector store, classic RAG vs. retrieval as a tool the agent decides when to use, answers that cite their sources, checking citations
+- **AGENT04 · Workflow Patterns** — TypeScript  
+  Prompt chaining, routing, parallelization, orchestrator-workers and evaluator-optimizer, and when a fixed workflow beats an autonomous agent
+- **[AGENT05 · Personal Assistant Agent](AGENT05/)** — Python · LangGraph · *draft*  
   The agent loop as a graph, conditional routing, checkpointers and durable state, human-in-the-loop interrupts, long-term memory stores, subgraphs and multi-agent composition, refactoring a fine-grained graph into a coarse one
-- **AGENT04 · Security of LLM Apps** — TypeScript  
+- **AGENT06 · Security of LLM Apps** — TypeScript  
   Prompt injection, direct and through retrieved documents or tool output, least-privilege tools, human approval for destructive actions, separating data from instructions, testing attacks with evals
 
 ### Tooling
