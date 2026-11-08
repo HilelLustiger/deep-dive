@@ -1,5 +1,5 @@
 // Tests for Parts 2-6 and 8: MyPromise.
-import { test, expect } from "vitest";
+import { test, expect, afterEach } from "vitest";
 import { MyPromise } from "../src/my-promise";
 import { nextTask, wait } from "./helpers";
 
@@ -272,4 +272,51 @@ test("any with no items rejects with an AggregateError", async () => {
     const error = await MyPromise.any([]).then(() => null, e => e);
 
     expect(error).toBeInstanceOf(AggregateError);
+});
+
+// Part 8
+
+afterEach(() => {
+    MyPromise.onUnhandledRejection = null;
+});
+
+function recordReports(): Array<{ reason: unknown; promise: MyPromise<unknown> }> {
+    const reports: Array<{ reason: unknown; promise: MyPromise<unknown> }> = [];
+    MyPromise.onUnhandledRejection = (reason, promise) => {
+        reports.push({ reason, promise });
+    };
+    return reports;
+}
+
+test("a rejection without a handler is reported once", async () => {
+    const reports = recordReports();
+    const error = new Error("unhandled");
+
+    MyPromise.reject(error);
+
+    await wait(20);
+    expect(reports).toHaveLength(1);
+    expect(reports[0].reason).toBe(error);
+});
+
+test("a handler added in the same turn, even in a microtask, prevents the report", async () => {
+    const reports = recordReports();
+    const promise = MyPromise.reject(new Error("handled later"));
+
+    queueMicrotask(() => {
+        promise.catch(() => {});
+    });
+
+    await wait(20);
+    expect(reports).toEqual([]);
+});
+
+test("the report is about the end of the chain", async () => {
+    const reports = recordReports();
+    const first = MyPromise.reject(new Error("e"));
+    const last = first.then(v => v);
+
+    await wait(20);
+    expect(reports).toHaveLength(1);
+    expect(reports[0].promise).toBe(last);
 });

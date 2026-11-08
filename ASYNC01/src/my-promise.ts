@@ -9,6 +9,8 @@ export class MyPromise<T> implements PromiseLike<T> {
     private state: State = "pending";
     private result: unknown = undefined;
     private reactions: Array<() => void> = [];
+    private handled: boolean = false;
+    static onUnhandledRejection: ((reason: unknown, promise: MyPromise<unknown>) => void) | null = null;
 
     constructor(executor: Executor<T>){
 
@@ -59,10 +61,19 @@ export class MyPromise<T> implements PromiseLike<T> {
 
         this.state = state;
         this.result = value;
+
         for (const fn of this.reactions) {
             queueMicrotask(fn);
         }
         this.reactions = []
+        
+        if (this.state === 'rejected' && !this.handled){
+            setTimeout(() => {
+                if (this.handled === false && MyPromise.onUnhandledRejection !== null) {
+                    MyPromise.onUnhandledRejection(value, this);
+                }
+            }, 0);
+        }
     }
 
     // Part 3 Implementation.
@@ -71,6 +82,9 @@ export class MyPromise<T> implements PromiseLike<T> {
     onRejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
 ): MyPromise<TResult1 | TResult2> {
     return new MyPromise<TResult1 | TResult2>((resolve, reject) => {
+
+        this.handled = true;
+        
         const reaction = (): void => {
             if (this.state === "fulfilled") {
                 if (onFulfilled && typeof onFulfilled === "function") {
@@ -272,4 +286,5 @@ export class MyPromise<T> implements PromiseLike<T> {
         })
     }
 
+    
 }
