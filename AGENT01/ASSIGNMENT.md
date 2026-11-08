@@ -443,7 +443,7 @@ npx vitest run       # all tests; none of them calls a real model
 What this assignment installed, and how to remove it when you're done:
 
 - **The packages:** `rm -rf node_modules` in this folder. `npm install` brings them back.
-- **Ollama and its model,** if you used it. **AGENT02 and AGENT03 use them too**, so keep them until you finish AGENT03, which says when to remove them. Then:
+- **Ollama and its model,** if you used it. **The next agent assignments use them too**, so keep them while you work through the agents track; the last assignment that needs them says so. Then:
   ```
   ollama rm qwen3          # the model, about 5 GB
   brew uninstall ollama
