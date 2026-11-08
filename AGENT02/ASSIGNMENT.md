@@ -294,4 +294,4 @@ What this assignment installed, and how to remove it when you're done:
 - **The packages:** `rm -rf node_modules` in this folder.
 - **The MCP Inspector:** `npx` downloaded it into its cache. `rm -rf ~/.npm/_npx` removes everything `npx` has downloaded; anything you run with `npx` again is downloaded again.
 - **The server in Claude Code,** if you added it: `claude mcp remove agent-tools`.
-- **Ollama and its model:** keep them for AGENT03. The cleanup section of AGENT03 removes them.
+- **Ollama and its model:** keep them; the next agent assignments use them too. The last one that needs them says so, and AGENT01's cleanup section has the commands.
