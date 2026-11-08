@@ -435,3 +435,19 @@ Try requests that need more than one step, and watch the transcript:
 npx tsc --noEmit     # type check, including the given code
 npx vitest run       # all tests; none of them calls a real model
 ```
+
+---
+
+## Cleaning up
+
+What this assignment installed, and how to remove it when you're done:
+
+- **The packages:** `rm -rf node_modules` in this folder. `npm install` brings them back.
+- **Ollama and its model,** if you used it. **AGENT02 and AGENT03 use them too**, so keep them until you finish AGENT03, which says when to remove them. Then:
+  ```
+  ollama rm qwen3          # the model, about 5 GB
+  brew uninstall ollama
+  rm -rf ~/.ollama         # anything left: other models and settings
+  ```
+  Stop `ollama serve` first, with Ctrl+C in its terminal.
+- **The Claude API key,** if you used one: delete `.env`, and if you don't need the key anymore, delete it in the Claude Console.
