@@ -26,12 +26,12 @@ Every project lives in its own folder with two documents:
 
 - **DS01 · Linked List** — C++  
   Nodes and raw pointers, insert/delete/traverse, freeing nodes in the destructor
-- **DS02 · Hash Map** — Python  
-  Hashing, collisions, resizing, the mapping protocol (`__getitem__`, `__setitem__`)
+- **[DS02 · Hash Map](DS02/)** — Python  
+  Hashing and the `__eq__`/`__hash__` contract, separate chaining, load factor and resizing, linear probing with tombstones, `MutableMapping`, testing against `dict`
 - **[DS03 · Binary Search Tree](DS03/)** — TypeScript · *<ins>complete</ins>*  
   Ordered tree insert/search/delete, generics and comparator functions
-- **DS04 · Priority Queue** — Java  
-  Binary heap in an array, sift-up and sift-down, bounded generics, `Iterable`
+- **[DS04 · Priority Queue](DS04/)** — Java  
+  Binary heap in an array, sift-up and sift-down, linear-time heap construction, heapsort and top-k, bounded generics and wildcards, fail-fast `Iterable`, Maven and JUnit
 
 ### Recursion
 
