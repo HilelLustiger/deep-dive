@@ -1,0 +1,14 @@
+{
+  "name": "async01-promise-chain",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}
