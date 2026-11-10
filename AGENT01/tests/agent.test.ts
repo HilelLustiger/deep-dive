@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { runAgent } from "../src/agent.ts";
+import { formatTranscript, runAgent } from "../src/agent.ts";
 import { answer, callTools, ScriptedModel } from "../src/model/scripted.ts";
 import { calculator, createNoteTools } from "../src/tools.ts";
 
@@ -101,4 +101,20 @@ test("parallel calls come back in one message", async () => {
             { callId: "n2", content: "Saved note 2", isError: false },
         ],
     });
+});
+
+test("formatTranscript shows the user, the calls, the results and the answer", async () => {
+    const model = new ScriptedModel([
+        callTools(["c1", "calculator", { a: 1, b: 0, op: "divide" }]),
+        answer("Can't."),
+    ]);
+
+    const result = await runAgent(model, [calculator], "1/0?");
+
+    expect(formatTranscript(result.messages)).toEqual([
+        "user: 1/0?",
+        '  -> calculator({"a":1,"b":0,"op":"divide"})',
+        "  <- error: Cannot divide by zero",
+        "assistant: Can't.",
+    ]);
 });
