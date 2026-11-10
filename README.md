@@ -121,7 +121,7 @@ Every project lives in its own folder with two documents:
 
 ### AI Agents
 
-- **[AGENT01 · Agents From Scratch](AGENT01/)** — TypeScript  
+- **[AGENT01 · Agents From Scratch](AGENT01/)** — TypeScript · *<ins>complete</ins>*  
   Tool definitions with JSON Schema, tool calls and results, parallel calls, a hand-written agent loop, stop reasons and step limits, tool errors as results, a provider-neutral model interface
 - **[AGENT02 · MCP Server](AGENT02/)** — TypeScript  
   The Model Context Protocol, serving AGENT01's tools over stdio, protocol errors vs. tool errors, the MCP Inspector, using a server's tools in your own agent
