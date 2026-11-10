@@ -32,3 +32,35 @@ test("waits for an async tool", async () => {
 
     expect(message.results[0].content).toBe("done");
 });
+
+test("an unknown tool becomes an error result", async () => {
+    const message = await runToolCalls([{ id: "u", name: "weather", input: {} }], [calculator]);
+
+    expect(message.results[0].isError).toBe(true);
+    expect(message.results[0].content).toContain("weather");
+    expect(message.results[0].content).toContain("calculator");
+});
+
+test("a tool that throws becomes an error result", async () => {
+    const message = await runToolCalls(
+        [{ id: "d", name: "calculator", input: { a: 1, b: 0, op: "divide" } }],
+        [calculator],
+    );
+
+    expect(message.results[0]).toEqual({ callId: "d", content: "Cannot divide by zero", isError: true });
+});
+
+test("a thrown value that isn't an Error becomes text", async () => {
+    const bad: Tool = {
+        name: "bad",
+        description: "",
+        inputSchema: { type: "object", properties: {} },
+        run: () => {
+            throw "nope";
+        },
+    };
+
+    const message = await runToolCalls([{ id: "b", name: "bad", input: {} }], [bad]);
+
+    expect(message.results[0]).toEqual({ callId: "b", content: "nope", isError: true });
+});

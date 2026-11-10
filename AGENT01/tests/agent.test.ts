@@ -68,6 +68,22 @@ test("max_tokens stops the loop", async () => {
     expect(result.stopReason).toBe("max_tokens");
 });
 
+test("the model sees a tool error and recovers", async () => {
+    const model = new ScriptedModel([
+        callTools(["c1", "calculator", { a: 10, b: 0, op: "divide" }]),
+        callTools(["c2", "calculator", { a: 10, b: 2, op: "divide" }]),
+        answer("10 / 2 = 5"),
+    ]);
+
+    const result = await runAgent(model, [calculator], "Divide 10 by something");
+
+    expect(result.text).toBe("10 / 2 = 5");
+    expect(model.requests[1].messages[2]).toEqual({
+        role: "tool",
+        results: [{ callId: "c1", content: "Cannot divide by zero", isError: true }],
+    });
+});
+
 test("parallel calls come back in one message", async () => {
     const model = new ScriptedModel([
         callTools(["n1", "add_note", { text: "a" }], ["n2", "add_note", { text: "b" }]),
