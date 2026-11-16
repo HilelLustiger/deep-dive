@@ -1,14 +1,5 @@
-from pathlib import Path
-
 import pytest
 from lm.bpe import BPETokenizer, get_pair_counts, merge
-
-DATA = Path(__file__).parent.parent / "data" / "tinyshakespeare.txt"
-
-
-@pytest.fixture(scope="module")
-def text():
-    return DATA.read_text(encoding="utf-8")
 
 
 @pytest.fixture(scope="module")
