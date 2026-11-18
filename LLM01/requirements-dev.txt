@@ -1,0 +1,4 @@
+pytest
+regex
+torch
+transformers
