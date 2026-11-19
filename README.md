@@ -110,8 +110,8 @@ Every project lives in its own folder with two documents:
 
 - **[LLM01 · How a Model Produces Text](LLM01/)** — Python · *<ins>complete</ins>*  
   Tokenization and byte-pair encoding from scratch, why models struggle with spelling and counting, a bigram model built by counting, smoothing and perplexity, logits and softmax, sampling (temperature, greedy, top-k, top-p), GPT-2 run locally, no API
-- **[LLM02 · Talking to an LLM](LLM02/)** — TypeScript · *to be revised*  
-  One interface you define, implemented for two providers (Claude and a local model), the stateless API, tokens and cost, system prompts, conversation history and the context window, streaming (SSE), errors, retries and timeouts, structured output, provider-specific features kept apart
+- **[LLM02 · LLM Calls in Production](LLM02/)** — TypeScript  
+  Layers around a provider-neutral model client: tracing, token cost and latency percentiles, which failures to retry, backoff with jitter and timeouts, structured output validated against a schema with repair, evals and a release gate on quality, cost and latency
 - **LLM03 · Prompts and Evals** — TypeScript  
   System prompts, few-shot examples, prompt templates, test sets for non-deterministic output, graders and LLM-as-judge, catching regressions when a prompt or model changes
 - **LLM04 · Embeddings and Retrieval** — TypeScript · MongoDB Atlas  
