@@ -112,8 +112,8 @@ Every project lives in its own folder with two documents:
   Tokenization and byte-pair encoding from scratch, why models struggle with spelling and counting, a bigram model built by counting, smoothing and perplexity, logits and softmax, sampling (temperature, greedy, top-k, top-p), GPT-2 run locally, no API
 - **[LLM02 · LLM Calls in Production](LLM02/)** — TypeScript  
   Layers around a provider-neutral model client: tracing, token cost and latency percentiles, which failures to retry, backoff with jitter and timeouts, structured output validated against a schema with repair, evals and a release gate on quality, cost and latency
-- **LLM03 · Prompts and Evals** — TypeScript  
-  System prompts, few-shot examples, prompt templates, test sets for non-deterministic output, graders and LLM-as-judge, catching regressions when a prompt or model changes
+- **[LLM03 · Prompts and Evals](LLM03/)** — TypeScript  
+  System prompts, prompt templates and few-shot examples, separating instructions from input, graders written as code, LLM-as-a-judge checked against human labels, repeated trials and flaky cases, catching regressions between prompt versions
 - **LLM04 · Embeddings and Retrieval** — TypeScript · MongoDB Atlas  
   Embeddings and cosine similarity, brute-force vs. indexed search, vector indexes, chunking strategies, retrieval evals (recall@k), long-term memory
 - **LLM05 · Fine-tuning** — Python  
@@ -127,7 +127,7 @@ Every project lives in its own folder with two documents:
   The Model Context Protocol, serving AGENT01's tools over stdio, protocol errors vs. tool errors, the MCP Inspector, using a server's tools in your own agent
 - **[AGENT03 · Agentic RAG](AGENT03/)** — TypeScript · *<ins>complete</ins>*  
   Chunking, embeddings and cosine similarity, a brute-force vector store, classic RAG vs. retrieval as a tool the agent decides when to use, answers that cite their sources, checking citations
-- **AGENT04 · Workflow Patterns** — TypeScript  
+- **[AGENT04 · Workflow Patterns](AGENT04/)** — TypeScript  
   Prompt chaining, routing, parallelization, orchestrator-workers and evaluator-optimizer, and when a fixed workflow beats an autonomous agent
 - **[AGENT05 · Personal Assistant Agent](AGENT05/)** — Python · LangGraph · *draft*  
   The agent loop as a graph, conditional routing, checkpointers and durable state, human-in-the-loop interrupts, long-term memory stores, subgraphs and multi-agent composition, refactoring a fine-grained graph into a coarse one
