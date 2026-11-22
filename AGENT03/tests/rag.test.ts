@@ -1,8 +1,9 @@
 import { expect, test } from "vitest";
 import type { Chunk } from "../src/chunk.ts";
 import { FakeEmbedder } from "../src/embed/fake.ts";
-import { answer, ScriptedModel } from "../src/model/scripted.ts";
-import { answerWithContext } from "../src/rag.ts";
+import { runAgent } from "../src/agent.ts";
+import { answer, callTools, ScriptedModel } from "../src/model/scripted.ts";
+import { answerWithContext, citations, createSearchTool, unsupportedCitations } from "../src/rag.ts";
 import { VectorStore } from "../src/store.ts";
 
 const pets: Chunk[] = [
@@ -31,4 +32,42 @@ test("answers from the retrieved context", async () => {
     if (message.role !== "user") throw new Error("expected a user message");
     expect(message.text).toContain("[pets.md#1]\nDogs bark at strangers and dogs bark at night.");
     expect(message.text.endsWith("Question: Why do dogs bark?")).toBe(true);
+});
+
+test("the search tool", async () => {
+    const store = new VectorStore(new FakeEmbedder());
+    await store.add(pets);
+    const tool = createSearchTool(store, 1);
+
+    expect(tool.name).toBe("search_docs");
+    expect(await tool.run({ query: "fish swim" })).toBe("[pets.md#2]\nFish swim in water.");
+    await expect(async () => tool.run({ query: " " })).rejects.toThrow();
+
+    const empty = createSearchTool(new VectorStore(new FakeEmbedder()));
+    expect(await empty.run({ query: "anything" })).toBe("No results.");
+});
+
+test("citations", () => {
+    expect(citations("See [vacation.md#0] and [expenses.md#2], and [vacation.md#0] again. Not [this].")).toEqual([
+        "vacation.md#0",
+        "expenses.md#2",
+    ]);
+    expect(citations("none")).toEqual([]);
+});
+
+test("an agent run with one invented citation", async () => {
+    const store = new VectorStore(new FakeEmbedder());
+    await store.add(pets);
+    const model = new ScriptedModel([
+        callTools(["s1", "search_docs", { query: "dogs bark" }]),
+        answer("Dogs bark at night [pets.md#1], and cats sing [pets.md#7]."),
+    ]);
+
+    const result = await runAgent(model, [createSearchTool(store, 1)], "Why do dogs bark?");
+
+    expect(model.requests[1].messages[2]).toEqual({
+        role: "tool",
+        results: [{ callId: "s1", content: "[pets.md#1]\nDogs bark at strangers and dogs bark at night.", isError: false }],
+    });
+    expect(unsupportedCitations(result)).toEqual(["pets.md#7"]);
 });
